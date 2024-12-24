@@ -22,23 +22,10 @@ jobs:
         with:
           r-version: '4.3.1'
 
-      - name: Install renv (working)
-        shell: Rscript {0}
-        run: install.packages("renv")
-
-      - name: Init renv
-        shell: Rscript {0}
-        run: renv::init()
-
-      - name: Debug
-        run: head renv/activate.R
-
-      - name: Force renv bootstrap
-        run: rm -r renv/library
-
-      - name: Say hi
-        shell: Rscript {0}
-        run: message("Hi!")
+      - name: Install R Dependencies
+        uses: r-lib/actions/setup-renv@v2
+        with:
+          packages: renv
 
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
