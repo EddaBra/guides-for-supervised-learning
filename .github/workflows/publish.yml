@@ -36,6 +36,10 @@ jobs:
       - name: Force renv bootstrap
         run: rm -r renv/library
 
+      - name: Say hi
+        shell: Rscript {0}
+        run: message("Hi!")
+
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
