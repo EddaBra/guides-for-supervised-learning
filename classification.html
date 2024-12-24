@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Guides for Supervised Learning - 5&nbsp; classification</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./beyond-linearity.html" rel="next">
+<link href="./linear-regression.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./classification.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">classification</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Guides for Supervised Learning</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Visualization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./model-accuracy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Model accuracy and fit</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linear-regression.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classification.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./beyond-linearity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Beyond linearity</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tree-based.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tree-based Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text-mining.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Text Mining</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#readings" id="toc-readings" class="nav-link active" data-scroll-target="#readings"><span class="header-section-number">5.1</span> Readings</a></li>
+  <li><a href="#classification" id="toc-classification" class="nav-link" data-scroll-target="#classification"><span class="header-section-number">5.2</span> Classification</a>
+  <ul class="collapse">
+  <li><a href="#types-of-classification" id="toc-types-of-classification" class="nav-link" data-scroll-target="#types-of-classification"><span class="header-section-number">5.2.1</span> Types of classification</a></li>
+  </ul></li>
+  <li><a href="#which-model" id="toc-which-model" class="nav-link" data-scroll-target="#which-model"><span class="header-section-number">5.3</span> Which model?</a>
+  <ul class="collapse">
+  <li><a href="#why-use-another-model-than-logistic-regression" id="toc-why-use-another-model-than-logistic-regression" class="nav-link" data-scroll-target="#why-use-another-model-than-logistic-regression"><span class="header-section-number">5.3.1</span> Why use another model than logistic regression?</a></li>
+  </ul></li>
+  <li><a href="#classification-algorithms" id="toc-classification-algorithms" class="nav-link" data-scroll-target="#classification-algorithms"><span class="header-section-number">5.4</span> Classification algorithms</a></li>
+  <li><a href="#k-nearest-neighbors" id="toc-k-nearest-neighbors" class="nav-link" data-scroll-target="#k-nearest-neighbors"><span class="header-section-number">5.5</span> K-nearest neighbors</a></li>
+  <li><a href="#logistic-regression" id="toc-logistic-regression" class="nav-link" data-scroll-target="#logistic-regression"><span class="header-section-number">5.6</span> Logistic regression</a>
+  <ul class="collapse">
+  <li><a href="#why-can-linear-regression-not-be-used-on-this-type-of-data" id="toc-why-can-linear-regression-not-be-used-on-this-type-of-data" class="nav-link" data-scroll-target="#why-can-linear-regression-not-be-used-on-this-type-of-data"><span class="header-section-number">5.6.1</span> Why can linear regression not be used on this type of data?</a></li>
+  <li><a href="#odds" id="toc-odds" class="nav-link" data-scroll-target="#odds"><span class="header-section-number">5.6.2</span> odds</a></li>
+  <li><a href="#how-to-estimate-the-coefficients" id="toc-how-to-estimate-the-coefficients" class="nav-link" data-scroll-target="#how-to-estimate-the-coefficients"><span class="header-section-number">5.6.3</span> How to estimate the coefficients?</a></li>
+  <li><a href="#interpretation-regression-coefficients" id="toc-interpretation-regression-coefficients" class="nav-link" data-scroll-target="#interpretation-regression-coefficients"><span class="header-section-number">5.6.4</span> Interpretation regression coefficients</a></li>
+  <li><a href="#multinominal-logistic-function" id="toc-multinominal-logistic-function" class="nav-link" data-scroll-target="#multinominal-logistic-function"><span class="header-section-number">5.6.5</span> Multinominal Logistic Function</a></li>
+  </ul></li>
+  <li><a href="#in-r" id="toc-in-r" class="nav-link" data-scroll-target="#in-r"><span class="header-section-number">5.7</span> in R</a>
+  <ul class="collapse">
+  <li><a href="#evaluating-classifiers" id="toc-evaluating-classifiers" class="nav-link" data-scroll-target="#evaluating-classifiers"><span class="header-section-number">5.7.1</span> Evaluating classifiers</a></li>
+  <li><a href="#most-important-confusion-matrix" id="toc-most-important-confusion-matrix" class="nav-link" data-scroll-target="#most-important-confusion-matrix"><span class="header-section-number">5.7.2</span> Most important: Confusion Matrix</a></li>
+  <li><a href="#measures" id="toc-measures" class="nav-link" data-scroll-target="#measures"><span class="header-section-number">5.7.3</span> Measures</a></li>
+  <li><a href="#roc-curve" id="toc-roc-curve" class="nav-link" data-scroll-target="#roc-curve"><span class="header-section-number">5.7.4</span> ROC Curve</a></li>
+  <li><a href="#logistic-regression-1" id="toc-logistic-regression-1" class="nav-link" data-scroll-target="#logistic-regression-1"><span class="header-section-number">5.7.5</span> Logistic regression</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">classification</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="readings" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="readings"><span class="header-section-number">5.1</span> Readings</h2>
+<p><a href="https://static1.squarespace.com/static/5ff2adbe3fe4fe33db902812/t/6062a083acbfe82c7195b27d/1617076404560/ISLR%2BSeventh%2BPrinting.pdf">ISLR</a>:</p>
+<ul>
+<li>Chapter 4: Classification</li>
+</ul>
+</section>
+<section id="classification" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="classification"><span class="header-section-number">5.2</span> Classification</h2>
+<p>Supervised Learning two methods:</p>
+<ul>
+<li>regression (numerical or metric, linear correlations)</li>
+<li>classification, predict to which category an observation belongs (qualitative outcome)</li>
+<li>many supervised learning problems concern categorical outcome - cancer, weather, banking data (default on payment of debt), images (is a cat on the photo or not?), news articles (in rubrics like sport, politics)</li>
+</ul>
+<section id="types-of-classification" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="types-of-classification"><span class="header-section-number">5.2.1</span> Types of classification</h3>
+<p><img src="figures/5.types.png" class="img-fluid" width="490"></p>
+<ul>
+<li>most of the methods based on binary classification, because no order, if you transform qualitative categories in numbers</li>
+<li>so in most cases multi-class classification must be transformed into binary classification → easiest way: one-vs-all-model</li>
+</ul>
+</section>
+</section>
+<section id="which-model" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="which-model"><span class="header-section-number">5.3</span> Which model?</h2>
+<p><strong>Parametric or non-parametric classifiers</strong></p>
+<p><img src="figures/5.para,non.png" class="img-fluid" width="490"></p>
+<p>Parametric model:</p>
+<ul>
+<li>When we have a data set, we made assumption about the data set</li>
+<li>we select from our assumption relevant predictors</li>
+<li>logistic regression (this lecture)</li>
+</ul>
+<p>Non-parametric model:</p>
+<ul>
+<li>as many predictors as we want</li>
+<li>less assumption about the data</li>
+<li>requires more data</li>
+<li>KNN (this lecture) or decision trees (lecture 8)</li>
+</ul>
+<p><strong>Generative &amp; Discriminative models</strong></p>
+<p>Generative:</p>
+<ul>
+<li>Represent both the data and the labels</li>
+<li>focus of probability: has a person cancer? yes or no? How probable is yes or no for each observation?</li>
+<li>Often, makes use of conditional independence and priors</li>
+<li>Models of data may apply to future prediction problems</li>
+<li>Examples: Naïve Bayes classifier, Bayesian network</li>
+</ul>
+<p>Discriminative:</p>
+<ul>
+<li>Learn to directly predict the labels from the data</li>
+<li>Often, assume a simple boundary (e.g., linear), not want to estimate probability for each observation, are looking for the relationship, the correlation</li>
+<li>Often easier to predict a label from the data than to model the data</li>
+<li>Examples: Logistic regression, SVM, decision tree</li>
+</ul>
+<p>Generative classifiers try to model the data. Discriminative classifiers try to predict the label.</p>
+<section id="why-use-another-model-than-logistic-regression" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="why-use-another-model-than-logistic-regression"><span class="header-section-number">5.3.1</span> Why use another model than logistic regression?</h3>
+<ul>
+<li>when substantial separation between two classes, the parameter estimates for logistic regression quite unstable</li>
+<li>distribution of predictors approxiametely normal and small sample size</li>
+<li>more than two response categories</li>
+<li>then: use the bayes classifier! Three classifiers, that use different estimates to approximate the Bayes classifier (see ISLR p.&nbsp;142 -158)</li>
+<li>linear discriminate analysis</li>
+<li>quadratic discirminant analysis</li>
+<li>naive Bayes</li>
+</ul>
+</section>
+</section>
+<section id="classification-algorithms" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="classification-algorithms"><span class="header-section-number">5.4</span> Classification algorithms</h2>
+<p>There is a lot! Here the most popular:</p>
+<ul>
+<li>K-nearest neighbors</li>
+<li>Logistic regression</li>
+<li>Naive Bayes</li>
+<li>Neural networks (deep learning)</li>
+<li>Support vector machine</li>
+<li>Decision tree</li>
+<li>Random forest</li>
+</ul>
+<p><strong>Which algorithm to choose: Generalization</strong></p>
+<p>How well does a learned model generalize from the data it was trained on to a new test set?</p>
+<p><img src="figures/5.para,non.png" class="img-fluid" width="200"></p>
+<p>No free Lunch Theorem: Variance-Bias Trade Off → there is no optimal solution of analyzing data !</p>
+</section>
+<section id="k-nearest-neighbors" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="k-nearest-neighbors"><span class="header-section-number">5.5</span> K-nearest neighbors</h2>
+<ul>
+<li>One of the most simple (supervised) machine learning methods</li>
+<li>Based on feature similarity: how similar is a data point to its neighbor(s) and classifies the data point into the class it is most similar to.</li>
+<li>k determines, how many neighbors are included to assign a value to the missing observation, take the average of the neighbors</li>
+<li>different similarities are there for methodolical determination of values, we as Data Scientists decide, which method we use to deterine similarity</li>
+<li>this is a non-parameteric model: does not make assumptions about the data set</li>
+<li>this is lazy algorithm: memorizes the training data set itself instead of learning a function from it, we don´t learn any functions, we don´t get any parameters as a result</li>
+<li>Can be used for both classification and regression (but more commonly used for classification)</li>
+<li>Although a very simple approach, KNN can often produce classifiers that are surprisingly good!</li>
+</ul>
+<p><strong>The model:</strong></p>
+<p>Given the memorized training data, and a new data point (test observation):</p>
+<ul>
+<li>Identify the <em>K</em> closests points in the training data to the new data point <span class="math inline">\(X_0\)</span>.</li>
+<li><em>K</em> is a hyper parameter, cannot be computed like the normal parameters out of the data → has to be set by the Scientist but: - Hyper parameter tuning: Assign different values to <em>K</em> and compute models with that</li>
+<li>ellbow method for KNN: Try different values and choose the value with the best model performance</li>
+<li>This set of ‘nearest neighbors’ we call Estimate the probability that the new data point belongs to category by <span class="math display">\[
+    PR(Y=j | X=x_0) = \frac{1}{K} \sum_{i \epsilon N_0}I (y_i = j)
+    \]</span></li>
+<li>(so, the fraction of points in whose response equal <em>j</em>) - Majority vote: classify the test observation to the categroy with the largest probability</li>
+</ul>
+<p><img src="figures/5.KNN.png" class="img-fluid" width="250"></p>
+<p><strong>Tuning Parameter K</strong></p>
+<ul>
+<li>Results obtained with KNN highly depend on chosen value for <em>K</em> , the number of neighbors used</li>
+<li>Small <em>K</em> (e.g.,<em>K</em> = 1): low bias but very high variance, ‘overly flexible decision boundary’ (see next slides)</li>
+<li>Large <em>K</em>: low-variance but high-bias, ‘decision boundary’ that is close to linear</li>
+<li>if <em>K</em> is too large, e.g.&nbsp;equal to sample size, we compute the same value for each observation, we want to predict The optimal value for <em>K</em> needs to be determined using a (cross-)validation approach</li>
+</ul>
+<p><img src="figures/5.K.png" class="img-fluid" width="400"> <img src="figures/5.K2.png" class="img-fluid" width="400"></p>
+<ul>
+<li>decision boundary is the line, that separate the observations and assign them to a class</li>
+<li>in the first, k=1 is the best solution, because the obersvations are very clear separated</li>
+<li>for less well seperated observations, an higher k is better</li>
+<li>left once are high variance (overfitting), right once are high biased (underfitting)</li>
+<li>k=5 must not be the best solution, we have to check other values</li>
+<li>one option: do clustering before!</li>
+</ul>
+<p><strong>in R</strong></p>
+<pre><code>#split the data set int train, validation, test
+## create class predictions for different ks using the train data to learn the model and the test data to evaluate the parameters
+library(class)
+knn_5_pred &lt;- knn(
+  train = default_train %&gt;% select(-default),
+  test  = default_valid  %&gt;% select(-default),
+  cl    = as_factor(default_train$default),
+  k     = 5
+)</code></pre>
+</section>
+<section id="logistic-regression" class="level2" data-number="5.6">
+<h2 data-number="5.6" class="anchored" data-anchor-id="logistic-regression"><span class="header-section-number">5.6</span> Logistic regression</h2>
+<ul>
+<li><p>Used to predict the probability that belongs to one of two categories (i.e., a binary outcome), for example:</p>
+<ul>
+<li>smoking/ non smoking</li>
+<li>pass/ fail an exam</li>
+</ul></li>
+<li><p>Can be extended to model &gt; 2 outcome categories: multinomial logistic regression (not treated in this course)</p></li>
+<li><p>Other option to model &gt; 2 outcome categories: Neural networks, naive Bayes, linear discriminant analysis (not treated in this course, but treated in ISLR)</p></li>
+</ul>
+<p><img src="figures/5.logistic.png" class="img-fluid" width="400"></p>
+<p><span class="math display">\[
+Want 0 \le H_\theta (x) \le 1
+\]</span></p>
+<p><span class="math display">\[
+H_\theta (x) = \theta^T x
+\]</span></p>
+<p><span class="math display">\[
+H_\theta (x) = g(\theta^T x)
+\]</span></p>
+<p>sigmoid function /logistic function:</p>
+<p><span class="math display">\[
+g(z) = \frac{1}{1 + e^-z}
+\]</span></p>
+<p><img src="figures/5.logistic2.png" class="img-fluid" width="300"></p>
+<p><img src="figures/5.logistic3.png" class="img-fluid" width="300"></p>
+<section id="why-can-linear-regression-not-be-used-on-this-type-of-data" class="level3" data-number="5.6.1">
+<h3 data-number="5.6.1" class="anchored" data-anchor-id="why-can-linear-regression-not-be-used-on-this-type-of-data"><span class="header-section-number">5.6.1</span> Why can linear regression not be used on this type of data?</h3>
+<ul>
+<li><p>Linear regression would predict impossible outcomes ( Pr (x) &lt; 0 and &gt; 1)</p></li>
+<li><p>Assumption of normally distributed residuals heavily violated</p></li>
+<li><p>To avoid this problem, we use a ‘trick’: we use a logistic `link function (logit)`</p></li>
+<li><p>Advantage: all predicted probabilities are above 0 and below 1</p></li>
+<li><p>so for the example below:</p>
+<ul>
+<li><p>Default is category, the Y outcome</p></li>
+<li><p>balance is X</p></li>
+<li><p>e is Eulersche Zahl and in R with <code>exp</code> written</p></li>
+</ul></li>
+</ul>
+<p><span class="math display">\[
+Pr (Default = yes| balance) = \frac{e^{\beta_0 + \beta1 balance}}{ 1 + exp^{\beta_0 + \beta1 balance}}
+\]</span></p>
+<ul>
+<li><p>left: normal linear regression with <code>Default = yes</code> (negative values!, not possible!)</p></li>
+<li><p>right: logistic regression, all probabilities are positive!</p></li>
+</ul>
+<p><img src="figures/5.logistic4.png" class="img-fluid" style="width:15cm"></p>
+<ul>
+<li>to fit this model. maximum likelihood → always S-shaped form</li>
+</ul>
+</section>
+<section id="odds" class="level3" data-number="5.6.2">
+<h3 data-number="5.6.2" class="anchored" data-anchor-id="odds"><span class="header-section-number">5.6.2</span> odds</h3>
+<ul>
+<li>can take a value between 0 and <span class="math inline">\(\infty\)</span> . Values very near to 0 or to <span class="math inline">\(\infty\)</span> indicate very low or very high probability. This is the formula of the quantity:</li>
+</ul>
+<p><span class="math display">\[
+\frac{Pr(Y=1)}{Pr(Y=0)} = \frac{pi}{1-pi} = e^{\beta_0 + \beta_1X_1 + \dots}
+\]</span></p>
+<ul>
+<li><p>used instead of probability → Es geht von der Idee der Chancen, der odds aus. Eine Möglichkeit, Wahrscheinlichkeiten anzugeben. Wie hoch ist die Chance, dass ein Ereignis eintritt gegenüber einem anderen?</p>
+<ul>
+<li><p>Beispiel: Münzwurf, 1:1, 1 Chance ist Kopf, eine andere Chance ist Zahl</p></li>
+<li><p>Beispiel 2: Würfeln einer 6, 1:5, eine Zahl 6 ist möglich, andere 5 Zahlen auch möglich</p></li>
+</ul></li>
+<li><p>Hence, when using logistic regression, we are modelling the log of the odds. Odds are a way of quantifying the probability of an event <em>E</em>.</p>
+<ul>
+<li>odds for an event <em>E</em> are: <span class="math display">\[
+odds(E) = \frac{Pr(E)}{Pr(E^c)}  = \frac{Pr(E)}{1-Pr(E)}
+\]</span></li>
+<li>The odds of getting head in a coin toss is:</li>
+</ul></li>
+</ul>
+<p><span class="math display">\[
+odds(heads) = \frac{Pr(heads)}{Pr(tails)} = \frac{Pr(heads)}{1- Pr(heads)} = odds(heads) = \frac{0.5}{1-0.5} = 1
+\]</span></p>
+<ul>
+<li><p>Another example: game Lingo 44 balls, 26 are blue, 6 red and 2 are green</p>
+<ul>
+<li>choosing blue:</li>
+</ul></li>
+</ul>
+<p><span class="math display">\[
+odds(blue) =\frac{36} {6} = \frac{46/44} {8/44} = 4.5
+\]</span></p>
+<ul>
+<li>Hence, odds of 1 indicate an equal likelihood of event occurring or not occurring. Odds &lt; 1 indicate a lower likelihood of the event, odds &gt;1 indicate higher likelihood</li>
+</ul>
+<p><span class="math display">\[
+ln(odds) = \beta_0 + \beta_1X_1 + \dots
+\]</span></p>
+<p>So the linear part of the function models the log of the odds. With the log we have a model where X is linear.</p>
+</section>
+<section id="how-to-estimate-the-coefficients" class="level3" data-number="5.6.3">
+<h3 data-number="5.6.3" class="anchored" data-anchor-id="how-to-estimate-the-coefficients"><span class="header-section-number">5.6.3</span> How to estimate the coefficients?</h3>
+<ul>
+<li><p>maximum likelihood method:</p>
+<ul>
+<li><p>for binaries, e. g. 1 = smoking, 0 = not smoking</p></li>
+<li><p>approach: estimate <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> such that the probability <span class="math inline">\(\hat{p}(x_i)\)</span> of an individual with <span class="math inline">\(Y=1\)</span> corresponds as closely as possible to the observed <span class="math inline">\(Y=1\)</span> for an individual.</p></li>
+</ul></li>
+<li><p>logistic function:</p></li>
+</ul>
+<p><span class="math display">\[
+l(\beta_0, \beta_1) = \prod_{i:y_i=1} p(x_i) \prod_{i´: y_i´= 0} (1- p(xi´))
+\]</span></p>
+<ul>
+<li><span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> are chosen to maximize the likelihood function.</li>
+</ul>
+</section>
+<section id="interpretation-regression-coefficients" class="level3" data-number="5.6.4">
+<h3 data-number="5.6.4" class="anchored" data-anchor-id="interpretation-regression-coefficients"><span class="header-section-number">5.6.4</span> Interpretation regression coefficients</h3>
+<ul>
+<li>in linear regression one unit change in X is one unit change in Y, in logistic regression instead: with increase in X by one unit change the log odds by <span class="math inline">\(\beta_1\)</span> → multiplies the odds by <span class="math inline">\(e^{\beta_1}\)</span> .</li>
+<li>with standard error measure the accuracy of the coefficients.</li>
+<li>z-statistic: a large (absolute) value in it indicates evidence against the null hypothesis</li>
+<li>p-value: significant or not?</li>
+<li>estimated intercept plays not a role!</li>
+<li>because relationship between <span class="math inline">\(p(X)\)</span> and <span class="math inline">\(X\)</span> are not a straight line, a unit change in <span class="math inline">\(X\)</span> does not change <span class="math inline">\(p(X)\)</span> and <span class="math inline">\(\beta_1\)</span> does not correspond to the change in <span class="math inline">\(X\)</span>. But we direction is is corresponding, negative or positive relationship!</li>
+<li>qualitatively: positive or negative effect of the predictor on the log of the odds (logit)</li>
+<li>quantitatively: effect on the pdds is <span class="math inline">\(exp(\beta)\)</span></li>
+<li>effect statistically significant?</li>
+</ul>
+<p>Making Predictions:</p>
+<ul>
+<li>making predictions by filling hin the equatation</li>
+</ul>
+<p><span class="math display">\[
+\hat{p}(X) = \frac{e^{\hat{\beta_0} + \hat{\beta_1X} +\hat{\beta_pX_p}}} {1 + e^{\hat{\beta_0} + \hat{\beta_1X}+\hat{\beta_pX_p}}}
+\]</span></p>
+<p><strong>Example:</strong> We have the following coefficients for a multiple logistic regression:</p>
+<p><img src="figures/5.titanic.png" class="img-fluid" width="400"></p>
+<p><img src="figures/5.titanic2.png" class="img-fluid" width="400"> How can we compare different classes?</p>
+<ol type="1">
+<li>30 year old female first class</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">exp</span>(<span class="fl">3.76</span> <span class="sc">-</span> (<span class="fl">0.039</span><span class="sc">*</span><span class="dv">30</span>))) <span class="sc">/</span>  (<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="fl">3.76</span> <span class="sc">+</span> ((<span class="sc">-</span><span class="fl">0.039</span>)<span class="sc">*</span><span class="dv">30</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9302152</code></pre>
+</div>
+</div>
+<ol start="2" type="1">
+<li>45 old male from 3rd class?</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">exp</span>(<span class="fl">3.76</span> <span class="sc">-</span> (<span class="fl">2.521</span><span class="sc">*</span><span class="dv">1</span>) <span class="sc">-</span> (<span class="fl">2.631</span><span class="sc">*</span><span class="dv">1</span>) <span class="sc">-</span> (<span class="fl">0.039</span><span class="sc">*</span><span class="dv">45</span>))) <span class="sc">/</span> (<span class="dv">1</span><span class="sc">-</span><span class="fu">exp</span>(<span class="fl">3.76</span> <span class="sc">-</span> (<span class="fl">2.521</span><span class="sc">*</span><span class="dv">1</span>) <span class="sc">-</span> (<span class="fl">2.631</span><span class="sc">*</span><span class="dv">1</span>)<span class="sc">-</span>(<span class="fl">0.039</span><span class="sc">*</span><span class="dv">45</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0449112</code></pre>
+</div>
+</div>
+<p>While a 30 year old female in first class has a probability of 93% survival rate, a 45 old male from 3rd class only have a 4 % rate.</p>
+</section>
+<section id="multinominal-logistic-function" class="level3" data-number="5.6.5">
+<h3 data-number="5.6.5" class="anchored" data-anchor-id="multinominal-logistic-function"><span class="header-section-number">5.6.5</span> Multinominal Logistic Function</h3>
+<ul>
+<li>expand logistic regression to more than 2 classes</li>
+<li>single class is chosen as base line (not really necessary, because estimates change, but key model outputs and log odds stay the same)</li>
+<li>so instead the softmax coding!</li>
+</ul>
+<p><span class="math display">\[
+log(\frac{Pr(Y=k| X=x)}{Pr(Y=K| X=x)} ) = \beta_{k0} + \beta_{k1x1} + \beta_{kpxp}
+\]</span></p>
+<p>log odds softmax coding function, which treat all K equally without baseline:</p>
+<p><span class="math display">\[
+Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1x1} +\beta_{kpxp}}} { \sum_{l=1}^K  e^{\beta_{k0}+ \beta_{k1x1} +\beta_{kpxp}}}
+\]</span></p>
+</section>
+</section>
+<section id="in-r" class="level2" data-number="5.7">
+<h2 data-number="5.7" class="anchored" data-anchor-id="in-r"><span class="header-section-number">5.7</span> in R</h2>
+<pre><code>## make a logistic regression using training data
+library(glm)
+lr_mod &lt;- glm(default ~ ., family = binomial, data = default_train)
+
+#get the coefficients
+coefs &lt;- coef(lr_mod)</code></pre>
+<section id="evaluating-classifiers" class="level3" data-number="5.7.1">
+<h3 data-number="5.7.1" class="anchored" data-anchor-id="evaluating-classifiers"><span class="header-section-number">5.7.1</span> Evaluating classifiers</h3>
+<p>When applying classifiers, we have new options to evaluate how well a classifier is doing besides model fit:</p>
+<ul>
+<li>Confusion matrix (used to obtain most measures below)</li>
+<li>Sensitivity (‘Recall’)</li>
+<li>Specificity</li>
+<li>Positive predictive value (‘Precision’)</li>
+<li>Negative predictive value</li>
+<li>Accuracy (and error rate)</li>
+<li>ROC and area under the curve</li>
+<li>For even more: <a href="https://en.wikipedia.org/wiki/Sensitivity_and_specificity" class="uri">https://en.wikipedia.org/wiki/Sensitivity_and_specificity</a></li>
+</ul>
+</section>
+<section id="most-important-confusion-matrix" class="level3" data-number="5.7.2">
+<h3 data-number="5.7.2" class="anchored" data-anchor-id="most-important-confusion-matrix"><span class="header-section-number">5.7.2</span> Most important: Confusion Matrix</h3>
+<pre><code>p_ped &lt;- predict(log_mod_titanic, type = "response")
+with(titanic, table(p_ped &gt; 0.5, Survived))
+
+### Survived
+### 0 1
+### FALSE 372 91
+### TRUE 71 222
+
+or in this way:
+conf_2NN &lt;- table(predicted = knn_2_pred, true = default_valid$default)
+conf_2NN
+  ###          true
+  ### predicted   No  Yes
+  ###       No  1885   46
+  ###       Yes   48   20</code></pre>
+<ul>
+<li>Now we are looking at the confusion matrix of the complete data set.Even better would be to split the data, fit the model on the training data only and compute the confusion matrix on the validation set only.</li>
+<li>We set a threshold for survival of 0.5. That is, for everyone with a predicted probability &gt; 0.5, we assume he/she survived, and a predicted probability of <span class="math inline">\(\le\)</span> 0.5 we assume he/she did not survive.</li>
+<li>In case of a binary outcome (e.g., survival yes or no), we either correctly classify, or make two kind of mistakes:</li>
+<li>Label someone as survivor who has survived (TP)</li>
+<li>Label someone who died and who has died (TN)</li>
+<li>Label a survivor as someone who died False negative (FN)</li>
+<li>Label someone who died as a survivor False positive (FP)</li>
+</ul>
+</section>
+<section id="measures" class="level3" data-number="5.7.3">
+<h3 data-number="5.7.3" class="anchored" data-anchor-id="measures"><span class="header-section-number">5.7.3</span> Measures</h3>
+<ul>
+<li>most important: Error rate and accuracy!</li>
+</ul>
+<p><img src="figures/5.confusion.png" class="img-fluid" width="400"></p>
+<p><img src="figures/5.confusion2.png" class="img-fluid" width="400"></p>
+<p><strong>Error rate (ERR)</strong> is calculated as the number of all incorrect predictions divided by the total number of the dataset. The best error rate is 0.0, whereas the worst is 1.0.</p>
+<p><span class="math display">\[
+ERR = \frac{FP + FN}{P + N}
+\]</span></p>
+<p><strong>Accuracy (ACC)</strong> is calculated as the number of all correct predictions divided by the total number of the dataset. The best accuracy is 1.0, whereas the worst is 0.0. It can also be calculated by <code>1 – ERR</code> <span class="math display">\[
+ACC = \frac{TP + TN}{P + N}
+\]</span> Error costs of positives and negatives are usually different. For instance, one wants to avoid false negatives more than false positives or vice versa. Other basic measures, such as sensitivity and specificity, are more informative than accuracy and error rate in such cases.</p>
+<p><strong>Sensitivity (SN)</strong> is calculated as the number of correct positive predictions divided by the total number of positives. It is also called recall (REC) or true positive rate (TPR). The best sensitivity is 1.0, whereas the worst is 0.0.</p>
+<p><span class="math display">\[
+SN = \frac{TP}{TP + FN} = \frac{TP}{P}
+\]</span> <strong>Specificity (SP)</strong> is calculated as the number of correct negative predictions divided by the total number of negatives. It is also called true negative rate (TNR). The best specificity is 1.0, whereas the worst is 0.0. <span class="math display">\[
+SP = \frac{TN}{TN + FP} = \frac{TN}{N}
+\]</span> <strong>Precision (PREC)</strong> is calculated as the number of correct positive predictions divided by the total number of positive predictions. It is also called positive predictive value (PPV). The best precision is 1.0, whereas the worst is 0.0.</p>
+<p><span class="math display">\[
+PREC = \frac{TP}{TP + FP}
+\]</span></p>
+<p><strong>False positive rate (FPR)</strong> is calculated as the number of incorrect positive predictions divided by the total number of negatives. The best false positive rate is 0.0 whereas the worst is 1.0. It can also be calculated as 1 – specificity.</p>
+<p><span class="math display">\[
+FPR = \frac{FP}{TN + FP} = 1 -SP
+\]</span></p>
+<p><strong>Threshold</strong></p>
+<ul>
+<li>Moving around the threshold affects the sensitivity and specificity!</li>
+<li>Moving the threshold especially makes sense when the predicted categories are unbalanced. For example, many more non survivors compared to survivors in the data set.</li>
+</ul>
+</section>
+<section id="roc-curve" class="level3" data-number="5.7.4">
+<h3 data-number="5.7.4" class="anchored" data-anchor-id="roc-curve"><span class="header-section-number">5.7.4</span> ROC Curve</h3>
+<ul>
+<li>The Receiver Operating Characteristics (ROC) plot is a popular measure for evaluating classifier performance.</li>
+<li>ROC curve is a popular graphic for simultaneously displaying the true and false positive rate <em>for all possible thresholds</em></li>
+<li>The ROC plot is a model-wide evaluation measure that is based on two basic evaluation measures – specificity and sensitivity. Specificity is a performance measure of the whole negative part of a dataset, whereas sensitivity is a performance measure of the whole positive part.</li>
+<li>The overall performance of a classifier, summarized over all possible thresholds, is given by the area under the curve (AUC)</li>
+</ul>
+<p><img src="figures/5.roc.png" class="img-fluid" width="350"></p>
+<p>A classifier with the random performance level always shows a straight line from the origin (0.0, 0.0) to the top right corner (1.0, 1.0). Two areas separated by this ROC curve indicates a simple estimation of the performance level. ROC curves in the area with the top left corner (0.0, 1.0) indicate good performance levels, whereas ROC curves in the other area with the bottom right corner (1.0, 0.0) indicate poor performance levels.</p>
+<p><img src="figures/5.roc2.png" class="img-fluid" width="350"></p>
+<p>A classifier with the perfect performance level shows a combination of two straight lines – from the origin (0.0, 0.0) to the top left corner (0.0, 1.0) and further to the top right corner (1.0, 1.0). It is important to notice that classifiers with meaningful performance levels usually lie in the area between the random ROC curve (baseline) and the perfect ROC curve.</p>
+<p>Comparison of multiple classifiers is usually straight-forward especially when no curves cross each other. Curves close to the perfect ROC curve have a better performance level than the ones closes to the baseline.</p>
+<p><img src="figures/5.roc3.png" class="img-fluid" width="350"></p>
+<p>Another advantage of using the ROC plot is a single measure called the AUC (area under the ROC curve) score. As the name indicates, it is an area under the curve calculated in the ROC space. One of the easy ways to calculate the AUC score is using the trapezoidal rule, which is adding up all trapezoids under the curve. Although the theoretical range of AUC score is between 0 and 1, the actual scores of meaningful classifiers are greater than 0.5, which is the AUC score of a random classifier.</p>
+<p><img src="figures/5.roc4.png" class="img-fluid" width="350"></p>
+<p>###Assignment</p>
+<p>Due to ascension day, this lab will not be a guided lab, but a lab at home. Note that the content covered in this lab is (just like all other labs) exam material. In this lab at home, two different classification methods will be covered: K-nearest neighbours and logistic regression. <strong>Please send your knitted .html file with the completed lab to your lab teacher before next lecture (Tuesday May 31st 9AM) to be marked as ‘attended’ for this lab.</strong> Solutions to this lab will be posted on Tuesday May 31st on the course website, and will shortly be discussed during lab 6.</p>
+<p>One of the packages we are going to use is <a href="https://cran.r-project.org/web/packages/class/class.pdf">class</a>. For this, you will probably need to <code>install.packages("class")</code> before running the <code>library()</code> functions. In addition, you will again need the <code>caret</code> package to create a training and a validation split for the used dataset (<em>note</em>: to keep this at home lab compact, we will only use a training and validation split, and omit the test dataset to evaluate model fit). You can download the student zip including all needed files for practical 5 <a href="https://surfdrive.surf.nl/files/index.php/s/J58fxg4AkOSKTcK">here</a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(class)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridis)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This practical will be mainly based around the <code>default</code> dataset which contains credit card loan data for 10 000 people. With the goal being to classify credit card cases as <code>yes</code> or <code>no</code> based on whether they will default on their loan.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"Default"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">force</span>(Default)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(Default)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>4 Variables, part of the ISLR book!</p>
+<p>Research subject: Credit card loan data Sample: 10.000 customers of a bank Predictor: - student - default - balance - income</p>
+<p>predicted outcome: credit card case yes / no</p>
+<ol type="1">
+<li><strong>Create a scatterplot of the <code>Default</code> dataset, where <code>balance</code> is mapped to the x position, <code>income</code> is mapped to the y position, and <code>default</code> is mapped to the colour. Can you see any interesting patterns already?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>Plot1<span class="ot">&lt;-</span><span class="fu">ggplot</span>(Default, <span class="fu">aes</span>(<span class="at">x=</span> balance, <span class="at">y=</span> income, <span class="at">color=</span> default))<span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>( <span class="at">x=</span> <span class="st">"Balance"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">y=</span> <span class="st">"Income"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"Default"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">title=</span> <span class="st">"Balance and Income of customers grouped by default"</span>)<span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>Plot1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="classification_files/figure-html/defaultplot1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>First of all, no correlation between Balance and Income is obersable. That is really counterintuitive, because you would expect, with higher balance and higher income and vice versa. On explanation could be, that people that earn a lot of money are good in finance and invest their money in the stock market or in real estate and consequently do not have a higher balance. In my opinion, balance is the y variable and income the x variable, so I had mapped them the other way around. Because why should Balance influence the income? Do you get interest rates on your balances? What you can see further, is that customers with higher balance has often a default, whereas people with lower balance has less often a default.</p>
+<ol start="2" type="1">
+<li><strong>Add <code>facet_grid(cols = vars(student))</code> to the plot. What do you see?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(Default, <span class="fu">aes</span>(<span class="at">x=</span> balance, <span class="at">y=</span> income, <span class="at">color=</span> default))<span class="sc">+</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>( <span class="at">x=</span> <span class="st">"Balance"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">y=</span> <span class="st">"Income"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"Default"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">title=</span> <span class="st">"Balance and Income of customers"</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">subtitle=</span> <span class="st">"grouped by default and student"</span>)<span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="at">cols=</span> <span class="fu">vars</span>(student))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="classification_files/figure-html/defaultplot2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>What you can see now, is that students have by far less income then not students. Here, no one has an income above 40.000, whereas in the not student group the only a few earn less than 10.000 and 40.000 ?$ seems like to be the centre span. Further, studens tend to have a higher balance, than non-students. Having a default look very similar distributed in both groups. In both groups, with higher balance more customers have a default.</p>
+<ol start="3" type="1">
+<li><strong>For use in the KNN algorithm, transform “student” into a dummy variable using <code>ifelse()</code> (0 = not a student, 1 = student). Then, randomly split the Default dataset into a training set <code>default_train</code> (80%) and a validation set <code>default_valid</code> (20%) using the <code>createDataPartition()</code> function of the <code>caret</code> package.</strong></li>
+</ol>
+<p>If you haven’t used the function <code>ifelse()</code> before, please feel free to review it in <a href="https://adv-r.hadley.nz/control-flow.html">Chapter 5 Control Flow</a> (<em>particular section 5.2.2</em>) in Hadley Wickham’s Book <a href="https://adv-r.hadley.nz/">Advanced R</a>, this provides a concise overview of choice functions (<code>if()</code>) and vectorised if (<code>ifelse()</code>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dummy variable</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(Default<span class="sc">$</span>student)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "No"  "Yes"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>Default<span class="sc">$</span>student <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(Default<span class="sc">$</span>student <span class="sc">==</span> <span class="st">"Yes"</span>, <span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># define the training partition  ~ 80 percent</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>train_index <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(Default<span class="sc">$</span>default, <span class="at">p =</span> .<span class="dv">8</span>, </span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">list =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">times =</span> <span class="dv">1</span>)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># split the data using the training partition to obtain training data   ~ 80 percent</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>default_train <span class="ot">&lt;-</span> Default[train_index,]</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># define the valid set   ~ 20 percent</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>default_valid <span class="ot">&lt;-</span> Default[<span class="sc">-</span>train_index,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="k-nearest-neighbours" class="level4" data-number="5.7.4.1">
+<h4 data-number="5.7.4.1" class="anchored" data-anchor-id="k-nearest-neighbours"><span class="header-section-number">5.7.4.1</span> K-Nearest Neighbours</h4>
+<p>Now that we have explored the dataset, we can start on the task of classification. We can imagine a credit card company wanting to predict whether a customer will default on the loan so they can take steps to prevent this from happening.</p>
+<p>The first method we will be using is k-nearest neighbours (KNN). It classifies datapoints based on a majority vote of the k points closest to it. In <code>R</code>, the <code>class</code> package contains a <code>knn()</code> function to perform knn.</p>
+<ol start="4" type="1">
+<li><strong>Create class predictions for the test set using the <code>knn()</code> function. Use <code>student</code>, <code>balance</code>, and <code>income</code> (but no basis functions of those variables) in the <code>default_train</code> dataset. Set k to 5. Store the predictions in a variable called <code>knn_5_pred</code>.</strong></li>
+</ol>
+<p><em>Remember</em>: make sure to review the <code>knn()</code> function through the <em>help</em> panel on the GUI or through typing “?knn” into the console. For further guidance on the <code>knn()</code> function, please see <em>Section 4.6.5</em> in <a href="http://faculty.marshall.usc.edu/gareth-james/ISL/">An introduction to Statistical Learning</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>?knn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>starting httpd help server ... done</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Select training set except the predicted</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>xtrain <span class="ot">&lt;-</span> default_train [, <span class="sc">-</span><span class="dv">1</span> ]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Select valid set except the predicted variables</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>yvalid <span class="ot">&lt;-</span> default_valid[, <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co"># vector containing the class labels for the training observations</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>Ytrain <span class="ot">&lt;-</span> default_train<span class="sc">$</span>default</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co"># predict with knn</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>knn_5_pred <span class="ot">&lt;-</span> class<span class="sc">::</span><span class="fu">knn</span>(<span class="at">train =</span>xtrain, <span class="at">test =</span> yvalid, <span class="at">cl =</span> Ytrain, <span class="at">k=</span> <span class="dv">5</span>)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(knn_5_pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>knn_5_pred
+  No  Yes 
+1971   28 </code></pre>
+</div>
+</div>
+<ol start="5" type="1">
+<li><strong>Create two scatter plots with income and balance as in the first plot you made. One with the true class (<code>default</code>) mapped to the colour aesthetic, and one with the predicted class (<code>knn_5_pred</code>) mapped to the colour aesthetic. Hint: Add the predicted class <code>knn_5_pred</code> to the <code>default_valid</code> dataset before starting your <code>ggplot()</code> call of the second plot. What do you see?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot 1:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>Plot1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="classification_files/figure-html/plotknn-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Why use I the default valid data set in the second plot? I do not understand, why I must plot with the validation set now. Should I use the validation set as data in the former graph, too?+</p>
+<p>→ default plot, because then we have the true class of default!</p>
+<p>So here the former graph with only the validation data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>Plot1v <span class="ot">&lt;-</span><span class="fu">ggplot</span>(default_valid, <span class="fu">aes</span>(<span class="at">x=</span> balance, <span class="at">y=</span> income, <span class="at">color=</span> default))<span class="sc">+</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>( <span class="at">x=</span> <span class="st">"Balance"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">y=</span> <span class="st">"Income"</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"predicted Default"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">title=</span> <span class="st">"Balance and Income of customers grouped by default"</span>)<span class="sc">+</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>Plot1v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="classification_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># combine data</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>default_valid2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(default_valid, knn_5_pred)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot predicted values</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>Plot2<span class="ot">&lt;-</span><span class="fu">ggplot</span>(default_valid2, <span class="fu">aes</span>(<span class="at">x=</span> balance, <span class="at">y=</span> income, <span class="at">color=</span> knn_5_pred))<span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>( <span class="at">x=</span> <span class="st">"Balance"</span>,</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">y=</span> <span class="st">"Income"</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"predicted Default"</span>,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">title=</span> <span class="st">"Balance and Income of customers grouped by predicted default"</span>)<span class="sc">+</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>Plot2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="classification_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>If we compare the two distributions of the default groups in the validation data set, we see in the predicted default plot a more narrow distribution. In the second one, for the predicted subjects the balance is higher than as we observed. So with this method we have less variance, but much more bias. I would conclude, with this knn we could underfit the data.</p>
+<ul>
+<li>there are quite some misclassifications: many “No” predictions</li>
+<li>with “Yes” true class and vice versa.</li>
+</ul>
+<ol start="6" type="1">
+<li><strong>Repeat the same steps, but now with a <code>knn_2_pred</code> vector generated from a 2-nearest neighbours algorithm. Are there any differences?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>knn_2_pred <span class="ot">&lt;-</span> class<span class="sc">::</span><span class="fu">knn</span>(<span class="at">train =</span>xtrain, <span class="at">test =</span> yvalid, <span class="at">cl =</span> Ytrain, <span class="at">k=</span> <span class="dv">2</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(knn_2_pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>knn_2_pred
+  No  Yes 
+1928   71 </code></pre>
+</div>
+</div>
+<p>During this we have manually tested two different values for K, this although useful in exploring your data. To know the optimal value for K, you should use cross validation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># combine data</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>default_valid2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(default_valid2, knn_2_pred)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot predicted values</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>Plot3<span class="ot">&lt;-</span><span class="fu">ggplot</span>(default_valid2, <span class="fu">aes</span>(<span class="at">x=</span> balance, <span class="at">y=</span> income, <span class="at">color=</span> knn_2_pred))<span class="sc">+</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>( <span class="at">x=</span> <span class="st">"Balance"</span>,</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">y=</span> <span class="st">"Income"</span>,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"predicted Default"</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">title=</span> <span class="st">"Balance and Income of customers grouped by predicted default"</span>)<span class="sc">+</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_viridis</span>(<span class="at">discrete=</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>Plot3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="classification_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>In this case, we overfit the data, we have a lot more variance, but less bias. Neither 2 or 5 seems to be the best knn.</p>
+<ul>
+<li>compared to the 5-nn model, more people get classified as “Yes”</li>
+<li>Still, the method is not perfect</li>
+</ul>
+</section>
+<section id="assessing-classification" class="level4" data-number="5.7.4.2">
+<h4 data-number="5.7.4.2" class="anchored" data-anchor-id="assessing-classification"><span class="header-section-number">5.7.4.2</span> Assessing classification</h4>
+<p>The confusion matrix is an insightful summary of the plots we have made and the correct and incorrect classifications therein. A confusion matrix can be made in <code>R</code> with the <code>table()</code> function by entering two <code>factor</code>s:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>conf_2NN <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">predicted =</span> knn_2_pred, <span class="at">true =</span> default_valid<span class="sc">$</span>default)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">view</span>(conf_2NN)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To learn more these, please see <em>Section 4.4.3</em> in An Introduction to Statistical Learning, where it discusses Confusion Matrices in the context of another classification method Linear Discriminant Analysis (LDA).</p>
+<ol start="7" type="1">
+<li><strong>What would this confusion matrix look like if the classification were perfect?</strong></li>
+</ol>
+<p>If the confusion matrix would be perfect, we have no false positives and no false negatives. Why we are using again only the validation set? In the ISLR book the true default status of the training data set is used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>conf_true <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">true_valid =</span> default_valid<span class="sc">$</span>default, <span class="at">true_valid =</span> default_valid<span class="sc">$</span>default)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>conf_true </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          true_valid
+true_valid   No  Yes
+       No  1933    0
+       Yes    0   66</code></pre>
+</div>
+</div>
+<ol start="8" type="1">
+<li><strong>Make a confusion matrix for the 5-nn model and compare it to that of the 2-nn model. What do you conclude?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>conf_5NN <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">predicted =</span> knn_5_pred, <span class="at">true =</span> default_valid<span class="sc">$</span>default)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">view</span>(conf_5NN)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In the confusion matrix for the 2 KNN model there is a prediction for 49 customers to default, but they actually not did (false positives) and for 49 customers is the case the other way around (false negative). In the 5 Knn model the false positive is by far less, only 14 customers are predicted to would default but actually did not. The false negative rate is in the second model slightly higher.</p>
+<p>Now the bank manager has to asked the following question: Is a slightly more negative rate more important for credit card loans or is a much higher false positive rate much more higher? I do not know, how much it costs a bank, giving credit cards to people, that default.</p>
+<ol start="9" type="1">
+<li><strong>Comparing performance becomes easier when obtaining more specific measures. Calculate the specificity, sensitivity, accuracy and the precision.</strong></li>
+</ol>
+<p>Assuming that model 5 is better, we test:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">#specifity of both, true negative / all negative</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>spec2 <span class="ot">&lt;-</span> <span class="dv">1884</span> <span class="sc">/</span> (<span class="dv">1884</span> <span class="sc">+</span> <span class="dv">49</span>) </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>spec5 <span class="ot">&lt;-</span> <span class="dv">1919</span> <span class="sc">/</span> (<span class="dv">1919</span> <span class="sc">+</span> <span class="dv">14</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>spec5 <span class="sc">&gt;</span> spec2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sensivity of both, true positve / all positive</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>sn2 <span class="ot">&lt;-</span> <span class="dv">17</span> <span class="sc">/</span> (<span class="dv">17</span><span class="sc">+</span> <span class="dv">49</span>)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>sn5 <span class="ot">&lt;-</span> <span class="dv">14</span> <span class="sc">/</span> (<span class="dv">14</span> <span class="sc">+</span><span class="dv">52</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>sn5 <span class="sc">&gt;</span> sn2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] FALSE</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># accuracy TP + TN / P + N</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>acc2 <span class="ot">&lt;-</span> (<span class="dv">1884</span> <span class="sc">+</span> <span class="dv">17</span>) <span class="sc">/</span> (<span class="dv">1884</span> <span class="sc">+</span> <span class="dv">49</span> <span class="sc">+</span> <span class="dv">49</span> <span class="sc">+</span><span class="dv">17</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>acc5 <span class="ot">&lt;-</span> (<span class="dv">1919</span> <span class="sc">+</span> <span class="dv">14</span>) <span class="sc">/</span> (<span class="dv">1919</span> <span class="sc">+</span> <span class="dv">14</span><span class="sc">+</span> <span class="dv">52</span><span class="sc">+</span><span class="dv">14</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>acc5 <span class="sc">&gt;</span> acc2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Precision TP / TP + FP</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>prec2 <span class="ot">&lt;-</span> <span class="dv">17</span> <span class="sc">/</span> (<span class="dv">17</span> <span class="sc">+</span> <span class="dv">49</span>)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>prec5 <span class="ot">&lt;-</span> <span class="dv">14</span><span class="sc">/</span> (<span class="dv">14</span> <span class="sc">+</span> <span class="dv">14</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>prec5 <span class="sc">&gt;</span> prec2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<ul>
+<li>The 5NN model has better specificity, but worse sensitivity. However, the overall accuracy of the 5NN model is (slightly) better. When we look at the precision, the 5NN model performs a lot better compared to the 2NN model.</li>
+</ul>
+</section>
+</section>
+<section id="logistic-regression-1" class="level3" data-number="5.7.5">
+<h3 data-number="5.7.5" class="anchored" data-anchor-id="logistic-regression-1"><span class="header-section-number">5.7.5</span> Logistic regression</h3>
+<p>KNN directly predicts the class of a new observation using a majority vote of the existing observations closest to it. In contrast to this, logistic regression predicts the <code>log-odds</code> of belonging to category 1. These log-odds can then be transformed to probabilities by performing an inverse logit transform:</p>
+<p><span class="math inline">\(p = \frac{1}{1 + e^{-\alpha}}\)</span></p>
+<p>where <span class="math inline">\(\alpha\)</span>; indicates log-odds for being in class 1 and <span class="math inline">\(p\)</span> is the probability.</p>
+<p>Therefore, logistic regression is a <code>probabilistic</code> classifier as opposed to a <code>direct</code> classifier such as KNN: indirectly, it outputs a probability which can then be used in conjunction with a cutoff (usually 0.5) to classify new observations.</p>
+<p>Logistic regression in <code>R</code> happens with the <code>glm()</code> function, which stands for generalized linear model. Here we have to indicate that the residuals are modeled not as a Gaussian (normal distribution), but as a <code>binomial</code> distribution.</p>
+<ol start="10" type="1">
+<li><strong>Use <code>glm()</code> with argument <code>family = binomial</code> to fit a logistic regression model <code>lr_mod</code> to the <code>default_train</code> data.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>lr_mod <span class="ot">&lt;-</span> <span class="fu">glm</span>(default <span class="sc">~</span> student <span class="sc">+</span> balance <span class="sc">+</span> income, <span class="at">data=</span> default_train, <span class="at">family=</span> binomial)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>pred_log <span class="ot">&lt;-</span> <span class="fu">predict.glm</span>(lr_mod, <span class="at">newdata =</span> default_train, <span class="at">type=</span> <span class="st">"response"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we have generated a model, we can use the <code>predict()</code> method to output the estimated probabilities for each point in the training dataset. By default <code>predict</code> outputs the log-odds, but we can transform it back using the inverse logit function of before or setting the argument <code>type = "response"</code> within the predict function.</p>
+<p>Is it right, that I used the default_train data as `new data’ argument ?</p>
+<ol start="11" type="1">
+<li><strong>Visualise the predicted probabilities versus observed class for the training dataset in <code>lr_mod</code>. You can choose for yourself which type of visualisation you would like to make. Write down your interpretations along with your plot.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>logdata <span class="ot">&lt;-</span> <span class="fu">cbind</span>(default_train, pred_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(logdata, <span class="fu">aes</span>(<span class="at">x=</span>income, <span class="at">y=</span> balance, <span class="at">color=</span> default))<span class="sc">+</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"observed and predicted default by balance"</span>,</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span> <span class="st">"income"</span>,</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="st">"balance"</span>)<span class="sc">+</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_viridis</span>(<span class="at">discrete =</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="classification_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(logdata, <span class="fu">aes</span>(<span class="at">x=</span>income, <span class="at">y=</span> balance, <span class="at">color=</span> pred_log))<span class="sc">+</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"observed and predicted default by balance"</span>,</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span> <span class="st">"income"</span>,</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="st">"balance"</span>)<span class="sc">+</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_viridis</span>()<span class="sc">+</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="classification_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The balance for the predicted default is way more higher than in the observations. In the predicted distribution no one with a default has a probable balance under 1500 $. While in the observed data in the validation set we can see a lot of observations that are lower than a 1500$. This is a sign for underfitting the data and for a too linear model.</p>
+<p>Another advantage of logistic regression is that we get coefficients we can interpret.</p>
+<ol start="12" type="1">
+<li><strong>Look at the coefficients of the <code>lr_mod</code> model and interpret the coefficient for <code>balance</code>. What would the probability of default be for a person who is not a student, has an income of 40000, and a balance of 3000 dollars at the end of each month? Is this what you expect based on the plots we’ve made before?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">scipen=</span><span class="dv">999</span>, <span class="at">digits=</span><span class="dv">7</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lr_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = default ~ student + balance + income, family = binomial, 
+    data = default_train)
+
+Coefficients:
+                 Estimate    Std. Error z value             Pr(&gt;|z|)    
+(Intercept) -10.634426784   0.536539293 -19.820 &lt; 0.0000000000000002 ***
+student      -0.771838466   0.265548022  -2.907              0.00365 ** 
+balance       0.005728527   0.000257862  22.215 &lt; 0.0000000000000002 ***
+income       -0.000001169   0.000009179  -0.127              0.89868    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 2340.6  on 8000  degrees of freedom
+Residual deviance: 1252.3  on 7997  degrees of freedom
+AIC: 1260.3
+
+Number of Fisher Scoring iterations: 8</code></pre>
+</div>
+</div>
+<p>What would the probability of default be for a person who is not a student, has an income of 40000, and a balance of 3000 dollars at the end of each month? Is this what you expect based on the plots we’ve made before?__</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>(<span class="fu">exp</span>(<span class="sc">-</span><span class="fl">10.63</span> <span class="sc">-</span> (<span class="fl">0.000001</span><span class="sc">*</span><span class="dv">40000</span>) <span class="sc">+</span> (<span class="fl">0.00573</span><span class="sc">*</span><span class="dv">3000</span>))) <span class="sc">/</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">exp</span>(<span class="sc">-</span><span class="fl">10.63</span> <span class="sc">-</span> (<span class="fl">0.000001</span><span class="sc">*</span><span class="dv">40000</span>) <span class="sc">+</span> (<span class="fl">0.00573</span><span class="sc">*</span><span class="dv">3000</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9985285</code></pre>
+</div>
+</div>
+<p>Yes, I would expect this I look to the graphs before.</p>
+<p>Let’s visualise the effect <code>balance</code> has on the predicted default probability.</p>
+<ul>
+<li>probability of .998 of defaulting. This is in line with the plots of before</li>
+<li>because this new data point would be all the way on the right.</li>
+</ul>
+<ol start="13" type="1">
+<li><strong>Create a data frame called <code>balance_df</code> with 3 columns and 500 rows: <code>student</code> always 0, <code>balance</code> ranging from 0 to 3000, and <code>income</code> always the mean income in the <code>default_train</code> dataset.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>student <span class="ot">&lt;-</span> <span class="fu">rep.int</span>(<span class="dv">0</span>, <span class="dv">500</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>balance <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3000</span>, <span class="at">length.out =</span> <span class="dv">500</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>mean_income <span class="ot">&lt;-</span><span class="fu">mean</span>(default_train<span class="sc">$</span>income)</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>income <span class="ot">&lt;-</span> <span class="fu">rep</span>(mean_income, <span class="dv">500</span>)</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>balance_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(student, balance, income)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">view</span>(balance_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="14" type="1">
+<li><strong>Use this dataset as the <code>newdata</code> in a <code>predict()</code> call using <code>lr_mod</code> to output the predicted probabilities for different values of <code>balance</code>. Then create a plot with the <code>balance_df$balance</code> variable mapped to x and the predicted probabilities mapped to y. Is this in line with what you expect?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># predict </span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>pred_balance <span class="ot">&lt;-</span> <span class="fu">predict.glm</span>(lr_mod, <span class="at">newdata =</span> balance_df, <span class="at">type=</span> <span class="st">"response"</span>)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>balance_df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(balance_df, pred_balance)</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="co">#plot</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>plot_balance <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(balance_df, <span class="fu">aes</span>(<span class="at">x=</span>balance, <span class="at">y=</span> pred_balance))<span class="sc">+</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_point</span>()<span class="sc">+</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"predicition with balance data set"</span>,</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span> <span class="st">"balance"</span>,</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="st">"predicition"</span>)<span class="sc">+</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_color_viridis</span>(<span class="at">discrete =</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>plot_balance </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="classification_files/figure-html/marplot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>It is what would be expected. If all the other predictors hold constant and we have only one equally distributed predictor, we have an S-shaped curve. That is because we have a categorical outcome variable. At one threshold, the probability of default changes.</p>
+<ol start="15" type="1">
+<li><strong>Create a confusion matrix just as the one for the KNN models by using a cutoff predicted probability of 0.5. Does logistic regression perform better?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a> pred_prob <span class="ot">&lt;-</span> <span class="fu">predict</span>(lr_mod, <span class="at">newdata =</span> default_valid, <span class="at">type =</span> <span class="st">"response"</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>pred_lr   <span class="ot">&lt;-</span> <span class="fu">factor</span>(pred_prob <span class="sc">&gt;</span> .<span class="dv">5</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>conf_logreg <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">predicted =</span> pred_lr, <span class="at">true =</span> default_valid<span class="sc">$</span>default)</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>conf_logreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         true
+predicted   No  Yes
+      No  1923   47
+      Yes   10   19</code></pre>
+</div>
+</div>
+<ul>
+<li>logistic regression performs better in every way than knn. This depends on</li>
+<li>your random split so your mileage may vary</li>
+</ul>
+<ol start="16" type="1">
+<li><strong>Calculate the specificity, sensitivity, accuracy and the precision for the logistic regression using the above confusion matrix. Again, compare the logistic regression to KNN.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>spec_logreg <span class="ot">&lt;-</span> conf_logreg[<span class="dv">1</span>,<span class="dv">1</span>] <span class="sc">/</span> (conf_logreg[<span class="dv">1</span>,<span class="dv">1</span>] <span class="sc">+</span> conf_logreg[<span class="dv">2</span>,<span class="dv">1</span>])</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>spec_logreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9948267</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>sens_logreg <span class="ot">&lt;-</span> conf_logreg[<span class="dv">2</span>,<span class="dv">2</span>] <span class="sc">/</span> (conf_logreg[<span class="dv">2</span>,<span class="dv">2</span>] <span class="sc">+</span> conf_logreg[<span class="dv">1</span>,<span class="dv">2</span>])</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>sens_logreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2878788</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>acc_logreg <span class="ot">&lt;-</span> (conf_logreg[<span class="dv">1</span>,<span class="dv">1</span>] <span class="sc">+</span> conf_logreg[<span class="dv">2</span>,<span class="dv">2</span>]) <span class="sc">/</span> <span class="fu">sum</span>(conf_logreg)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>acc_logreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.9714857</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>prec_logreg <span class="ot">&lt;-</span> conf_logreg[<span class="dv">2</span>,<span class="dv">2</span>] <span class="sc">/</span> (conf_logreg[<span class="dv">2</span>,<span class="dv">2</span>] <span class="sc">+</span> conf_logreg[<span class="dv">2</span>,<span class="dv">1</span>])</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>prec_logreg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.6551724</code></pre>
+</div>
+</div>
+<p>Now we can very clearly see that logisitc regression performs a lot better compared to KNN, especially the increase in precision is impressive!</p>
+<section id="final-exercise" class="level4" data-number="5.7.5.1">
+<h4 data-number="5.7.5.1" class="anchored" data-anchor-id="final-exercise"><span class="header-section-number">5.7.5.1</span> Final exercise</h4>
+<p>Now let’s do another - slightly less guided - round of KNN and/or logistic regression on a new dataset in order to predict the outcome for a specific case. We will use the Titanic dataset also discussed in the lecture. The data can be found in the <code>/data</code> folder of your project. Before creating a model, explore the data, for example by using <code>summary()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/Titanic.csv"</span>)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>titanic <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(titanic)</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(titanic)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [1,313 × 5] (S3: tbl_df/tbl/data.frame)
+ $ Name    : chr [1:1313] "Allen, Miss Elisabeth Walton" "Allison, Miss Helen Loraine" "Allison, Mr Hudson Joshua Creighton" "Allison, Mrs Hudson JC (Bessie Waldo Daniels)" ...
+ $ PClass  : chr [1:1313] "1st" "1st" "1st" "1st" ...
+ $ Age     : num [1:1313] 29 2 30 25 0.92 47 63 39 58 71 ...
+ $ Sex     : chr [1:1313] "female" "female" "male" "female" ...
+ $ Survived: int [1:1313] 1 0 0 0 1 1 1 0 1 0 ...</code></pre>
+</div>
+</div>
+<ol start="17" type="1">
+<li><strong>Create a model (using knn or logistic regression) to predict whether a 14 year old boy from the 3rd class would have survived the Titanic disaster.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define the training partition  ~ 80 percent</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>train_index <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(titanic<span class="sc">$</span>Survived, <span class="at">p =</span> .<span class="dv">8</span>, </span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">list =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">times =</span> <span class="dv">1</span>)</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="co"># split the data using the training partition to obtain training data   ~ 80 percent</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>survived_train <span class="ot">&lt;-</span> titanic[train_index,]</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a><span class="co"># define the valid set   ~ 20 percent</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>survived_valid <span class="ot">&lt;-</span> titanic[<span class="sc">-</span>train_index,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>lr_tit <span class="ot">&lt;-</span> <span class="fu">glm</span>(Survived <span class="sc">~</span> PClass <span class="sc">+</span> Age <span class="sc">+</span> Sex, <span class="at">data=</span> survived_train, <span class="at">family=</span> binomial)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lr_tit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+glm(formula = Survived ~ PClass + Age + Sex, family = binomial, 
+    data = survived_train)
+
+Coefficients:
+             Estimate Std. Error z value             Pr(&gt;|z|)    
+(Intercept)  3.777953   0.448122   8.431 &lt; 0.0000000000000002 ***
+PClass2nd   -1.372996   0.293746  -4.674 0.000002952638886757 ***
+PClass3rd   -2.520843   0.310605  -8.116 0.000000000000000482 ***
+Age         -0.034997   0.008546  -4.095 0.000042183735717070 ***
+Sexmale     -2.790157   0.229857 -12.139 &lt; 0.0000000000000002 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 823.25  on 603  degrees of freedom
+Residual deviance: 541.25  on 599  degrees of freedom
+  (447 observations deleted due to missingness)
+AIC: 551.25
+
+Number of Fisher Scoring iterations: 5</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(lr_tit, </span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>        <span class="at">newdata =</span> <span class="fu">tibble</span>(</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">PClass =</span> <span class="fu">c</span>( <span class="st">"3rd"</span>,    <span class="st">"2nd"</span>),</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">Age    =</span> <span class="fu">c</span>(    <span class="dv">14</span>,       <span class="dv">14</span>), </span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">Sex    =</span> <span class="fu">c</span>(<span class="st">"male"</span>, <span class="st">"female"</span>)</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>        ), </span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">type =</span> <span class="st">"response"</span></span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        1         2 
+0.1168090 0.8715802 </code></pre>
+</div>
+</div>
+<ol start="18" type="1">
+<li><strong>Would the passenger have survived if they were a 14 year old girl in 2nd class?</strong></li>
+</ol>
+<ul>
+<li>So our hypothetical passenger does not have a large survival probability:</li>
+<li>our model would classify the boy as not surviving. The girl would likely survive however. This is due to the women and children getting preferred access to the lifeboats. Also 3rd class was way below deck.</li>
+</ul>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./linear-regression.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Regression</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./beyond-linearity.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Beyond linearity</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Guides for Supervised Learning - 4&nbsp; Linear Regression</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./classification.html" rel="next">
+<link href="./model-accuracy.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./linear-regression.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Regression</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Guides for Supervised Learning</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./visualization.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Visualization</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./model-accuracy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Model accuracy and fit</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./linear-regression.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./classification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">classification</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./beyond-linearity.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Beyond linearity</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./tree-based.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Tree-based Methods</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./text-mining.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Text Mining</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#readings" id="toc-readings" class="nav-link active" data-scroll-target="#readings"><span class="header-section-number">4.1</span> Readings</a></li>
+  <li><a href="#simple-linear-regression" id="toc-simple-linear-regression" class="nav-link" data-scroll-target="#simple-linear-regression"><span class="header-section-number">4.2</span> Simple linear regression</a></li>
+  <li><a href="#multiple-linear-regressions" id="toc-multiple-linear-regressions" class="nav-link" data-scroll-target="#multiple-linear-regressions"><span class="header-section-number">4.3</span> Multiple linear regressions</a></li>
+  <li><a href="#additive-assumption" id="toc-additive-assumption" class="nav-link" data-scroll-target="#additive-assumption"><span class="header-section-number">4.4</span> Additive Assumption</a></li>
+  <li><a href="#polynomial-regression-for-non-linear-relationships" id="toc-polynomial-regression-for-non-linear-relationships" class="nav-link" data-scroll-target="#polynomial-regression-for-non-linear-relationships"><span class="header-section-number">4.5</span> polynomial regression for non-linear relationships</a></li>
+  <li><a href="#accurary-of-linear-regressions" id="toc-accurary-of-linear-regressions" class="nav-link" data-scroll-target="#accurary-of-linear-regressions"><span class="header-section-number">4.6</span> Accurary of linear regressions</a>
+  <ul class="collapse">
+  <li><a href="#cost-function-for-multiple-and-linear-regressions" id="toc-cost-function-for-multiple-and-linear-regressions" class="nav-link" data-scroll-target="#cost-function-for-multiple-and-linear-regressions"><span class="header-section-number">4.6.1</span> cost function for multiple and linear regressions</a></li>
+  <li><a href="#more-ways-accessing-accuracy-of-the-model" id="toc-more-ways-accessing-accuracy-of-the-model" class="nav-link" data-scroll-target="#more-ways-accessing-accuracy-of-the-model"><span class="header-section-number">4.6.2</span> 3 more ways accessing accuracy of the model:</a></li>
+  </ul></li>
+  <li><a href="#potential-problems-of-linear-regression-models" id="toc-potential-problems-of-linear-regression-models" class="nav-link" data-scroll-target="#potential-problems-of-linear-regression-models"><span class="header-section-number">4.7</span> Potential Problems of linear regression models</a></li>
+  <li><a href="#why-we-need-test-data" id="toc-why-we-need-test-data" class="nav-link" data-scroll-target="#why-we-need-test-data"><span class="header-section-number">4.8</span> Why we need test data?</a></li>
+  <li><a href="#which-variables-shall-i-include-in-my-model" id="toc-which-variables-shall-i-include-in-my-model" class="nav-link" data-scroll-target="#which-variables-shall-i-include-in-my-model"><span class="header-section-number">4.9</span> Which variables shall I include in my model?</a></li>
+  <li><a href="#subset-selection" id="toc-subset-selection" class="nav-link" data-scroll-target="#subset-selection"><span class="header-section-number">4.10</span> Subset Selection</a>
+  <ul class="collapse">
+  <li><a href="#in-r" id="toc-in-r" class="nav-link" data-scroll-target="#in-r"><span class="header-section-number">4.10.1</span> in R</a></li>
+  </ul></li>
+  <li><a href="#shrinkage-regularization" id="toc-shrinkage-regularization" class="nav-link" data-scroll-target="#shrinkage-regularization"><span class="header-section-number">4.11</span> Shrinkage, Regularization</a>
+  <ul class="collapse">
+  <li><a href="#ridge-regression" id="toc-ridge-regression" class="nav-link" data-scroll-target="#ridge-regression"><span class="header-section-number">4.11.1</span> Ridge regression</a></li>
+  <li><a href="#how-to-select-λ" id="toc-how-to-select-λ" class="nav-link" data-scroll-target="#how-to-select-λ"><span class="header-section-number">4.11.2</span> How to select λ</a></li>
+  <li><a href="#lasso-regression" id="toc-lasso-regression" class="nav-link" data-scroll-target="#lasso-regression"><span class="header-section-number">4.11.3</span> Lasso regression</a></li>
+  <li><a href="#standardization-of-predictors" id="toc-standardization-of-predictors" class="nav-link" data-scroll-target="#standardization-of-predictors"><span class="header-section-number">4.11.4</span> Standardization of predictors</a></li>
+  </ul></li>
+  <li><a href="#in-r-1" id="toc-in-r-1" class="nav-link" data-scroll-target="#in-r-1"><span class="header-section-number">4.12</span> in R</a></li>
+  <li><a href="#best-subset-selection" id="toc-best-subset-selection" class="nav-link" data-scroll-target="#best-subset-selection"><span class="header-section-number">4.13</span> Best subset selection</a></li>
+  <li><a href="#regularization-with-glmnet" id="toc-regularization-with-glmnet" class="nav-link" data-scroll-target="#regularization-with-glmnet"><span class="header-section-number">4.14</span> Regularization with glmnet</a></li>
+  <li><a href="#tuning-lambda" id="toc-tuning-lambda" class="nav-link" data-scroll-target="#tuning-lambda"><span class="header-section-number">4.15</span> Tuning lambda</a></li>
+  <li><a href="#comparing-methods-advanced" id="toc-comparing-methods-advanced" class="nav-link" data-scroll-target="#comparing-methods-advanced"><span class="header-section-number">4.16</span> Comparing methods (advanced)</a></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions"><span class="header-section-number">4.17</span> Conclusions</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Linear Regression</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="readings" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="readings"><span class="header-section-number">4.1</span> Readings</h2>
+<p><a href="https://static1.squarespace.com/static/5ff2adbe3fe4fe33db902812/t/6062a083acbfe82c7195b27d/1617076404560/ISLR%2BSeventh%2BPrinting.pdf">ISLR</a>:</p>
+<ul>
+<li>Chapter 3.1 - 3.4: Linear Regression (optional)</li>
+<li>Chapter 6.1 through 6.2: Linear Model Selection and Regularization: Subset Selection &amp; Shrinkage Methods</li>
+</ul>
+</section>
+<section id="simple-linear-regression" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="simple-linear-regression"><span class="header-section-number">4.2</span> Simple linear regression</h2>
+<p>Predicting a quantitative response Y on the basis on a single predictor variable X. We want to estimate the predicted variable of the basis of X, computing the parameter <span class="math inline">\(\beta\)</span>.</p>
+<p><span class="math display">\[
+\hat{y} = \hat{\beta}_0 + \hat{\beta_1}x + \epsilon
+\]</span></p>
+<p>For estimating the parameters <span class="math inline">\(\hat{\beta_0}\)</span> (intercept) and <span class="math inline">\(\hat{\beta_1}\)</span> (parameter for x) most used method is least <strong>squares criterion</strong>. Residuals are computed for each ith observed response value minus the ith predicted value by the linear model for sample of size n.</p>
+<p><span class="math display">\[
+e_i = y_i - \hat{y_i}
+\]</span></p>
+<p>These residuals are summed up for all i observations to the <em>residual sum of squares (RSS)</em>:</p>
+<p><span class="math display">\[
+RSS = e_1^2 + e_2^2 + \dots + e_n^2
+\]</span></p>
+<p>So in sum the formula for RSS: <span class="math display">\[
+RSS = \sum_{i=1}^{n} (y_i - \hat{y})^2
+\]</span></p>
+<p>The least squares approach choose the estimates (<span class="math inline">\(\beta\)</span>) to minimize the RSS:</p>
+<p><span class="math display">\[
+\hat{\beta_1} = \frac{\sum_{i=1}^{n} (x_i - \overline{x})(y_i - \overline{y})} {\sum_{i=1}^{n} (x_i - \overline{x})}
+\]</span> <span class="math display">\[
+\hat{\beta_0}= \overline{y} - \hat{\beta_1}\overline{x}
+\]</span> Where <span class="math inline">\(\overline{x}\)</span> and <span class="math inline">\(\overline{y}\)</span> re the sample means.</p>
+</section>
+<section id="multiple-linear-regressions" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="multiple-linear-regressions"><span class="header-section-number">4.3</span> Multiple linear regressions</h2>
+<p>extended formula of simple regression:</p>
+<p><span class="math display">\[
+\hat{y} = \hat{\beta}_0 + \hat{\beta_1}x_1 + \hat{\beta_2}x_2 + \dots +\hat{\beta_p}x_p + \epsilon
+\]</span></p>
+<p>where Xj represents the jth predictor and βj quantifies the association between that variable and the response. We interpret βj as the average effect on Y of a one unit increase in Xj , holding all other predictors fixed.</p>
+<p>Same least squared method for estimating the parameters are used.</p>
+<p>Interpreted like this: When we have increase on the x axis by one, there will be an increase on the y axis by coefficent of x1 holding the other variables constant.</p>
+<p>Important questions:</p>
+<ol type="1">
+<li>Is at least one of the predictors X1,X2, . . . ,Xp useful in predicting the response?</li>
+<li>Do all the predictors help to explain Y , or is only a subset of the predictors useful?</li>
+<li>How well does the model fit the data?</li>
+<li>Given a set of predictor values, what response value should we predict, and how accurate is our prediction?</li>
+</ol>
+</section>
+<section id="additive-assumption" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="additive-assumption"><span class="header-section-number">4.4</span> Additive Assumption</h2>
+<p>Two of the most important assumptions state that the relationship between the predictors and response are additive and linear. The additivity assumption means that the association between a predictor Xj and the response Y does not depend on the values of the other predictors. The linearity assumption states that the change in the response Y associated with a one-unit change in Xj is constant, regardless of the value of Xj . Additive assumption refers to an <strong>interaction effect</strong> between the variables. One way of extending this model is to include a third predictor, called an interaction term, which is constructed by computing the product of X1 and X2:</p>
+<p><span class="math display">\[
+Y=\beta_0 + \beta_1x_1 + \beta_2x_2 + \beta_3x_1x_2 + \epsilon
+\]</span></p>
+<p>The hierarchical principle states that if we include an interaction in a model, we should also include the main effects, even if the p-values associated with their coefficients are not significant. In other words, if the interaction between X1 and X2 seems important, then we should include both X1 and X2 in the model even if their coefficient estimates have large p-values</p>
+</section>
+<section id="polynomial-regression-for-non-linear-relationships" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="polynomial-regression-for-non-linear-relationships"><span class="header-section-number">4.5</span> polynomial regression for non-linear relationships</h2>
+<p>simple approach for incorporating non-linear associations in a linear model is to include transformed versions of the predictors. Example is a quadric shape:</p>
+<p><span class="math display">\[
+Y = \beta_0 + \beta_1x_1 + \beta_2x_2^2 + \epsilon
+\]</span></p>
+</section>
+<section id="accurary-of-linear-regressions" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="accurary-of-linear-regressions"><span class="header-section-number">4.6</span> Accurary of linear regressions</h2>
+<p>How we can verify, that our parameters fits to the real one? Because samples are always biased, how can we be sure, that our function is <strong>accurate</strong>?</p>
+<ul>
+<li>Therefore, we compute the <strong>standard error</strong>, which is the standard deviation of the sample distribution.</li>
+<li>tells us the average amount that an estimate differs from the actual value</li>
+<li>shrinks, the bigger n is</li>
+<li>The bigger the SE, the bigger the insecurity about the parameters</li>
+</ul>
+<p>Standard deviation is squared root of variance</p>
+<p><span class="math display">\[
+\sigma = \sqrt{\frac{1}{N} \sum_{1}^{n} (x_i - \overline{x}_i)^2}
+\]</span></p>
+<p>Variance: <span class="math display">\[
+Var(X) = \sigma^2
+\]</span></p>
+<p><span class="math display">\[
+Var(X) = \frac{1}{N} \sum_{1}^{n} (x_i - \overline{x}_i)^2
+\]</span> For estimating standard errors of the parameters to check how near they are to the true values: <span class="math display">\[
+SE(\hat{\beta_0}^2 = \sigma^2 [\frac{1}{n} + \frac{\overline{x}^2} {\sum_{i=1}^{n} (x_i - \overline{x})^2}]
+\]</span> <span class="math display">\[
+SE(\hat{\beta_1}^2 = \frac{\sigma^2} {\sum_{i=1}^{n} (x_i - \overline{x})^2}
+\]</span> In general <span class="math inline">\(\sigma^2\)</span> is not known, therefore, we compute the residual standard error: <span class="math display">\[
+RSE = \sqrt{\frac{RSS}{n-2}}
+\]</span></p>
+<p>Our goal is to find parameters that minimize the MSE, in doing this: <span class="math display">\[
+MSE = \frac{1}{n} \sum_{i=1}^{n} (y - \hat{y})^2
+\]</span> <img src="figures/4.simple,poly.png" class="img-fluid" width="490"></p>
+<section id="cost-function-for-multiple-and-linear-regressions" class="level3" data-number="4.6.1">
+<h3 data-number="4.6.1" class="anchored" data-anchor-id="cost-function-for-multiple-and-linear-regressions"><span class="header-section-number">4.6.1</span> cost function for multiple and linear regressions</h3>
+<p>How to find the optimal θ (the ones that minimize MSE)?</p>
+<ul>
+<li>Option 1: Using algebra</li>
+<li>Option 2: Using gradient descent –&gt; optimization technique used in many machine learning method</li>
+</ul>
+<p>We are computing the MSE (see above) with different parameter settings. If the MSE (or the local parameter is <span class="math inline">\(L_\theta\)</span>) is 0, the model fit perfect the data. For each value of the parameter <span class="math inline">\(\beta\)</span> or in this case called <span class="math inline">\(\theta\)</span> we get another MSE. As a result we have a curve for simple regression that looks like this:</p>
+<p><img src="figures/4.cost.png" class="img-fluid" width="490"></p>
+<p>The curve is bell-shaped. In the following, we can see how the bell-shaped curve looks like in a graph and how the gradient of the regression (<span class="math inline">\(h_{\theta}(x)\)</span>) and the function of the parameters are connected with each other:</p>
+<p><img src="figures/4.gradient1.png" class="img-fluid" width="490"></p>
+<p><img src="figures/4.gradient2.png" class="img-fluid" width="490"></p>
+<p><img src="figures/4.curve.png" class="img-fluid" width="490"></p>
+<p>Standard errors useful for computing <strong>confidence intervals</strong>. 95 % confidence interval means,that within this interval is a 95 % probability, that this range will contain the true unknown value of the parameter.</p>
+<p>Standard errors for hypothesis tests with null hypothesis: <span class="math inline">\(H_0: \beta_1 = 0\)</span> → model reduced to <span class="math inline">\(Y = \beta_0 + \epsilon\)</span> → computing a t-statistic:</p>
+<p><span class="math display">\[
+t= \frac{\hat{\beta_1} - 0} { SE(\hat{\beta_1})}
+\]</span></p>
+<p>measures the number of standard deviations that <span class="math inline">\(\hat{\beta_1}\)</span> is away from 0.No relationship, t- distribution with n-2 degrees of freedom. The t-distribution has a bell shape and for values of n greater than approximately 30 it is quite similar to the standard normal distribution.Consequently, it is a simple matter to compute the probability of observing any number equal to |t| or larger in absolute value, assuming β1 = 0. We call this probability the <strong>p-value</strong>. Roughly speaking, we interpret the p-value as follows: a small p-value indicates that it is unlikely to observe such a substantial association between the predictor and the response due to chance, in the absence of any real association between the predictor and the response.</p>
+<p>If the standard deviation is known, we use z statistic insteat of t-statistic.</p>
+</section>
+<section id="more-ways-accessing-accuracy-of-the-model" class="level3" data-number="4.6.2">
+<h3 data-number="4.6.2" class="anchored" data-anchor-id="more-ways-accessing-accuracy-of-the-model"><span class="header-section-number">4.6.2</span> 3 more ways accessing accuracy of the model:</h3>
+<ol type="1">
+<li><strong>Residual Standard Error (RSE)</strong> an absoulte measure of the lack of fit of the model, so the number has to be seen in context of the values on Y (computed seen above)</li>
+<li><span class="math inline">\(R^2\)</span> an alternative measure, takes the form of the proportion of variance explained and and so it always takes on a value between 0 and 1, and is independent of the scale of Y . Computed like this:</li>
+</ol>
+<p><span class="math display">\[
+R^2 = \frac{TSS - RSS}{TSS} = 1- \frac{RSS}{TSS}
+\]</span></p>
+<p>Total sum of squares: <span class="math display">\[
+TSS = \sum (y_i- \overline{y_i})^2
+\]</span></p>
+<p>TSS measures the total variance in the response Y , and can be squares thought of as the amount of variability inherent in the response before the regression is performed. In contrast, RSS measures the amount of variability that is left unexplained after performing the regression. Hence, TSS −RSS measures the amount of variability in the response that is explained (or removed) by performing the regression, and R2 measures the proportion of variability in Y that can be explained using X.</p>
+<p>Interpretation more easily, because values always lay between 0 and 1.</p>
+<ol start="3" type="1">
+<li><strong>F-Statistic</strong> only for multiple regression, null-hypothesis testing is not possible, we need to ask whether all of the regression coefficients are zero.</li>
+</ol>
+<p>Therefore, F-statistic: <span class="math display">\[
+F= \frac{(TSS-RSS)/p)}{RSS/(n-p-1)}
+\]</span> oberhalb des Bruchs: <span class="math inline">\(H_0\)</span> is true unterhalb des Bruchs: linear model assumptions would be correct. Hence, when there is no relationship between the response and predictors, one would expect the F-statistic to take on a value close to 1. On the other hand, if Ha is true, then E{(TSS − RSS)/p} &gt; σ2, so we expect F to be greater than 1. How large does the F-statistic need to be before we can reject H0 and conclude that there is a relationship? It turns out that the answer depends on the values of n and p.&nbsp;When n is large, an F-statistic that is just a little larger than 1 might still provide evidence against H0. In contrast, a larger F-statistic is needed to reject H0 if n is small. When H0 is true and the errors ϵi have a normal distribution, the F-statistic follows an F-distribution.6 For any given value of n and p, any statistical software package can be used to compute the p-value associated with the F-statistic using this distribution. Based on this p-value, we can determine whether or not to reject H0. The approach of using an F-statistic to test for any association between the predictors and the response works when p is relatively small, and certainly small compared to n.&nbsp;However, sometimes we have a very large number of variables. If p &gt; n then there are more coefficients βj to estimate than observations from which to estimate them. In this case we cannot even fit the multiple linear regression model using least squares, so the Fstatistic cannot be used, and neither can most of the other concepts that we have seen so far in this chapter.</p>
+</section>
+</section>
+<section id="potential-problems-of-linear-regression-models" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="potential-problems-of-linear-regression-models"><span class="header-section-number">4.7</span> Potential Problems of linear regression models</h2>
+<ol type="1">
+<li>Non-linearity of the response-predictor relationships.</li>
+<li>Correlation of error terms. An important assumption of the linear regression model is that the error terms, ϵ1, ϵ2, . . . , ϵn, are uncorrelated. What does this mean? For instance, if the errors are uncorrelated, then the fact that ϵi is positive provides little or no information about the sign of ϵi+1. The standard errors that are computed for the estimated regression coefficients or the fitted values are based on the assumption of uncorrelated error terms. If in fact there is correlation among the error terms, then the estimated standard errors will tend to underestimate the true standard errors. As a result, confidence and prediction intervals will be narrower than they should be.</li>
+<li>Non-constant variance of error terms. Another important assumption of the linear regression model is that the error terms have a constant variance, Var(ϵi) = σ2. The standard errors, confidence intervals, and hypothesis tests associated with the linear model rely upon this assumption. Unfortunately, it is often the case that the variances of the error terms are non-constant. For instance, the variances of the error terms may increase with the value of the response. One can identify non-constant variances in the errors, or heteroscedasticity, from the presence of a funnel shape in heterothe residual plot.</li>
+<li>Outliers. Residual plots can be used to identify outliers. In this example, the outlier is clearly visible in the residual plot illustrated in the center panel of Figure 3.12. But in practice, it can be difficult to decide how large a residual needs to be before we consider the point to be an outlier. To address this problem, instead of plotting the residuals, we can plot the studentized residuals, computed by dividing each residual ei by its estimated standard studentized error. Observations whose studentized residuals are greater than 3 in abso- residual lute value are possible outliers.</li>
+<li>High-leverage points. We just saw that outliers are observations for which the response yi is unusual given the predictor xi. In contrast, observations with high leverage high have an unusual value for. In order to quantify an observation’s leverage, we compute the leverage statistic. A large value of this statistic indicates an observation with high leverage.</li>
+<li>Collinearity. Collinearity refers to the situation in which two or more predictor variables are closely related to one another.To avoid such a situation, it is desirable to identify and address potentialcollinearity problems while fitting the model. A simple way to detect collinearity is to look at the correlation matrix of the predictors. An element of this matrix that is large in absolute value indicates a pair of highly correlated variables, and therefore a collinearity problem in the data.Unfortunately, not all collinearity problems can be detected by inspection of the correlation matrix: it is possible for collinearity to exist between three or more variables even if no pair of variables has a particularly high correlation. We call this situation multicollinearity. Instead of inspecting the correlation matrix, a better way to assess multi- collinearity is to compute the variance inflation factor (VIF).The smallest possible value for VIF is 1,which indicates the complete absence of collinearity. Typically in practicethere is a small amount of collinearity among the predictors. As a rule of thumb, a VIF value that exceeds 5 or 10 indicates a problematic amount of collinearity.</li>
+</ol>
+</section>
+<section id="why-we-need-test-data" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="why-we-need-test-data"><span class="header-section-number">4.8</span> Why we need test data?</h2>
+<p>Why is the MSE from the validation data set so high?</p>
+<ul>
+<li>We have so many models,like in this case over 50,000 models, we are overfitting the validation data.</li>
+<li>We cannot use the same data set for compare the models and test one model</li>
+<li>cross-validation does not have this problem</li>
+</ul>
+</section>
+<section id="which-variables-shall-i-include-in-my-model" class="level2" data-number="4.9">
+<h2 data-number="4.9" class="anchored" data-anchor-id="which-variables-shall-i-include-in-my-model"><span class="header-section-number">4.9</span> Which variables shall I include in my model?</h2>
+<p>Select only certain variables helps not overfitting the data and the influence of the variables is more easy to interprete.</p>
+<p>A very flexible model (one with many coefficients) is like a kid in candyshop with a platinum credit card: It goes around buying all the coefficients it wants and never stops.</p>
+<p>Idea: Tell the model not to go overboard with the complexity. We set up the correct complexity as the one that minimizes MSE in the validation data.</p>
+<ul>
+<li><em>Prediction Accuracy</em>:</li>
+</ul>
+<p>Provided that the true relationship between the response and the predictors is approximately linear, the least squares estimates will have low bias. If n &gt; p that is, if n, the number of observations, is much larger than p, the number of variables then the least squares estimates tend to also have low variance, and hence will perform well on test observations. However, if n is not much larger than p, then there can be a lot of variability in the least squares fit, resulting in overfitting and consequently poor predictions on future observations not used in model training. And if p &gt; n, then there is no longer a unique least squares coefficient estimate: the variance is infinite so the method cannot be used at all. By constraining or shrinking the estimated coefficients, we can often substantially reduce the variance at the cost of a negligible increase in bias. This can lead to substantial improvements in the accuracy with which we can predict the response for observations not used in model training.</p>
+<ul>
+<li><em>Model interpretability</em>: It is often the case that some or many of the variables used in a multiple regression model are in fact not associated with the response. Including such irrelevant variables leads to unnecessary complexity in the resulting model. By removing these variables that is, by setting the corresponding coefficient estimates to zero we can obtain a model that is more easily interpreted. Now least squares is extremely unlikely to yield any coefficient estimates that are exactly zero. In this chapter, we see some approaches for automatically performing feature selection or variable selection that is, for excluding irrelevant variables from a multiple regression model.</li>
+</ul>
+<p>Approaches, that have better prediction accuracy and model interpretability than least squares method:</p>
+</section>
+<section id="subset-selection" class="level2" data-number="4.10">
+<h2 data-number="4.10" class="anchored" data-anchor-id="subset-selection"><span class="header-section-number">4.10</span> Subset Selection</h2>
+<ul>
+<li>identifying a subset of the p predictors that we believe to be related to the response. We then fit a model using least squares on the reduced set of variables</li>
+</ul>
+<p>Restrict the number of predictors (kid is allowed only to choose 3 candies)</p>
+<p>Pick the best p predictors</p>
+<p>How, with the MSE training data set, not the validation data set, because: we do not waste our validation set, because we need this to evaluate the best model in the next step, training data set has the same complexity</p>
+<p>How to do constrain the complexity of the model? There are different methods:</p>
+<p><strong>Best subset selection</strong></p>
+<ul>
+<li>fit a separate least squares regression for each possible combination of the p predictors</li>
+<li>which model is the best? The one with the smallest RSS or largest <span class="math inline">\(R^2\)</span>.</li>
+</ul>
+<p><img src="figures/4.best.png" class="img-fluid" width="490"> - starts with a null model for all predictors and then compares all models with each other - in the next step the best model is chosen - then the model need to be validated with crossvalidation or the validation data set - In the case of logistic regression, instead of ordering models by RSS in Step 2 we instead use the deviance, a measure deviance that plays the role of RSS for a broader class of models. The deviance is negative two times the maximized log-likelihood; the smaller the deviance, the better the fit - not handy for very large <em>p</em> because if p = 10, we would have 1000 possible models and for p =200 over a million</p>
+<p>That is because often this is done:</p>
+<p><strong>Forward stepwise selection</strong></p>
+<ul>
+<li>best alternative to best subset selection</li>
+<li>Forward stepwise selection begins with a model containing no predictors, and then adds predictors to the model, one-at-a-time, until all of the predictors are in the model.</li>
+<li>at each step the variable that gives the greatest additional improvement to the fit is added to the model is added</li>
+<li>if p= 20 only 211 models have to be computed</li>
+</ul>
+<p><img src="figures/4.forward.png" class="img-fluid" width="490"></p>
+<ul>
+<li>first step, the null model</li>
+<li>second: consider all models at the moment in comparison to a model where an additional predictor is added</li>
+<li>choose the best model among these models</li>
+<li>select the best model and using cross validation or the validation data set</li>
+<li>Though forward stepwise tends to do well in practice, it is not guaranteed to find the best possible model out of all 2p models containing subsets of the p predictors. For instance, suppose that in a given data set with p = 3 predictors, the best possible one-variable model contains X1, and the best possible two-variable model instead contains X2 and X3. Then forward stepwise selection will fail to select the best possible two-variable model, because M1 will contain X1, so M2 must also contain X1 together with one additional variable</li>
+</ul>
+<p><strong>Backward stepwise selection</strong></p>
+<ul>
+<li>similar to forward selection, only the other way around</li>
+<li>n needs to be larger than p, so a full model can be fitted.</li>
+</ul>
+<p><img src="figures/4.back.png" class="img-fluid" width="490"></p>
+<p><strong>Advantages and Disadvantages</strong></p>
+<ul>
+<li>all models are compared with each other</li>
+<li>not feasible, lot of computations</li>
+<li>forward selection (start with an empty model and add one by one)</li>
+<li>faster</li>
+<li>not sure, that you find the best model, because not all models are compared and only the one is chosen, which was better than the one before, so the interactions between possible predictors are not integrated → stack local minima</li>
+<li>backward selection (full model and remove one by one)</li>
+<li>faster</li>
+<li>stack local minima</li>
+<li>if you have more predictors than observations we cannot start with the full model, so if p &gt; n we cannot use it</li>
+</ul>
+<p>Backward and forward is not that good in finding the truth than the best subset solution → it is especially a problem if you want to infer, because in this case truth is more important than in predictions</p>
+<p>Now we have for all the models computed the MSE in one of three ways we use the validation set to identify, which model is outside this comparisons the best. So not biased by the comparisons, we compute the MSE with the validation set again.</p>
+<p>For each selection same procedure:</p>
+<p>For each level of complexity (number of predictors): Fit x models of equal complexity –&gt; Keep the best using e.g.&nbsp;MSE or R2 Estimate E(MSE) for models of different complexity using cross-validation –&gt; Select best model Estimate E(MSE) of the best model using test data</p>
+<p><strong>Cp, AIC, BIC, and Adjusted R2</strong></p>
+<p>If we do not have data for validation, - that would be the preferable way- we can estimate tht test error my making an adjustment to the training error to account for the bias due to overfitting.</p>
+<p><strong>Cp</strong> as unbiased estimate of the test MSE</p>
+<p><span class="math display">\[
+C_p = \frac{1}{n}(RSS + 2d\sigma^2)
+\]</span></p>
+<p><span class="math inline">\(\sigma^2\)</span> is a estimate of the variance of the error <span class="math inline">\(\epsilon\)</span>. Typically ˆσ2 is estimated using the full model containing all predictors. As a consequence, the Cp statistic tends to take on a small value for models with a low test error, so when determining which of a set of models is best, we choose the model with the lowest Cp value.</p>
+<p><strong>AIC Akaike information criterion</strong> for a large class of models fit by maximum likelihood</p>
+<p><span class="math display">\[
+AIC = \frac{1}{n}(RSS + 2d\sigma^2)
+\]</span> Hence for least squares models, Cp and AIC are proportional to each other.</p>
+<p><strong>BIC Bayesian information criterion (BIC)</strong> <span class="math display">\[
+BIC = \frac{1}{n}(RSS + log(n)d\sigma^2)
+\]</span> from Bayesian point of view. Like Cp, the BIC will tend to take on a small value for a model with a low test error, and so generally we select the model that has the lowest BIC value. BIC statistic generally places a heavier penalty on models with many variables, and hence results in the selection of smaller models than C</p>
+<p><strong>Adjusted R</strong> <span class="math display">\[
+Adbjusted R^2 = = 1- \frac{RSS/(n-d-1)}{TSS/(n-d-1)}
+\]</span> Since RSS always decreases as more variables are added to the model, the R2 always increases as more variables are added.a large value of adjusted R2 indicates a model with a small test error. The intuition behind the adjusted R2 is that once all of the correct variables have been included in the model, adding additional noise variables will lead to only a very small decrease in RSS.</p>
+<p><strong>why validation and crossvalidation is better:</strong></p>
+<p>This procedure has an advantage relative to AIC, BIC, Cp, and adjusted R2, in that it provides a direct estimate of the test error, and makes fewer assumptions about the true underlying model. It can also be used in a wider range of model selection tasks, even in cases where it is hard to pinpoint the model degrees of freedom (e.g.&nbsp;the number of predictors in the model) or hard to estimate the error variance <span class="math inline">\(\sigma^2\)</span>.</p>
+<p>For more precision, we can use the <strong>one-standard-error rule</strong>. We first calculate standard error of the estimated test MSE for each model size, and then select the smallest model for which the estimated test error is within one standard error of the lowest point on the curve. The rationale here is that if a set of models appear to be more or less equally good, then we might as well choose the simplest model that is, the model with the smallest number of predictors.</p>
+<section id="in-r" class="level3" data-number="4.10.1">
+<h3 data-number="4.10.1" class="anchored" data-anchor-id="in-r"><span class="header-section-number">4.10.1</span> in R</h3>
+<p><strong>Best Subset</strong></p>
+<pre><code>#generate all formuals for a data set and the predicted outcome
+ # Input : 
+ # p   : number of variables 
+ # x_vars : character vector of x vars
+ # y_var : character of y var
+
+generate_formulas &lt;- function(p, x_vars, y_var) {
+ # Input checking
+ if (p %% 1 != 0)      stop("Input an integer n")
+ if (p &gt; length(x_vars))  stop("p should be smaller than number of vars")
+ if (!is.character(x_vars)) stop("x_vars should be a character vector")
+ if (!is.character(y_var)) stop("y_vars should be character type")
+ 
+ # combn generates all combinations, apply turns them into formula strings
+ apply(combn(x_vars, p), 2, function(vars) {
+  paste0(y_var, " ~ ", paste(vars, collapse = " + "))
+ })
+}
+
+ #all formulas with e.g. 1 and 2 predictors
+formulas_1 &lt;- generate_formulas(p = 1, x_vars = x_vars, y_var = "Salary")
+formulas_2 &lt;- generate_formulas(p = 2, x_vars = x_vars, y_var = "Salary")
+
+# Initialise a vector we will fill with MSE values
+mses_1 &lt;- rep(0, length(formulas_1))
+mses_2 &lt;- rep(0, length(formulas_2))
+
+# loop over all the formulas
+for (i in 1:length(formulas_1)) {
+ mses_1[i] &lt;- lm_mse(as.formula(formulas_1[i]), baseball_train, baseball_valid)
+}
+
+for (i in 1:length(formulas_2)) {
+ mses_2[i] &lt;- lm_mse(as.formula(formulas_2[i]), baseball_train, baseball_valid)
+}
+
+
+# Compare mses, output is the MSE
+min(mses_1)
+min(mses_2)
+
+# extract the best formula out of it, in this case, the model with 2 p wins, output is the forumla
+
+formulas_2[which.min(mses_2)]
+
+# estimate then the model and calculate the mse
+lm_best &lt;- lm(Salary ~ Walks + CAtBat, baseball_train)
+mse &lt;- function(y_true, y_pred) mean((y_true - y_pred)^2)
+mse(baseball_test$Salary, predict(lm_best, newdata = baseball_test))</code></pre>
+<p><strong>Backward</strong></p>
+<pre><code># start with a full model
+full_model &lt;- lm(MntWines ~ ., data = train_data)
+# step backward
+step(full_model, direction = "backward")</code></pre>
+<p><strong>Forward</strong></p>
+<pre><code>library(leaps)
+regfit_fwd = regsubsets(Salary~., data = Hitters, nvmax = 19, method = "forward")
+summary(regfit_fwd)</code></pre>
+</section>
+</section>
+<section id="shrinkage-regularization" class="level2" data-number="4.11">
+<h2 data-number="4.11" class="anchored" data-anchor-id="shrinkage-regularization"><span class="header-section-number">4.11</span> Shrinkage, Regularization</h2>
+<p>This approach involves fitting a model involving all p predictors. However, the estimated coefficients are shrunken towards zero relative to the least squares estimates. This shrinkage (also known as regularization) has the effect of reducing variance. Depending on what type of shrinkage is performed, some of the coefficients may be estimated to be exactly zero. Hence, shrinkage methods can also perform variable selection.</p>
+<p>Restrict the number, which model is accurate (the kid is given only 3 dollar) Constrain the sum of squared cofficients (L2) or absolute sum of coefficients (L1) to be below s How: Adapt the loss function (e.g.&nbsp;MSE) to penalize including variables</p>
+<p>We want to fit the training data (estimate the weights of the coefficients) Make the model behave ‘regularly’ by penalizing the purchase of ‘too many’ coefficients Extremely efficient way to approximately solve the best subset problem: Variable selection + regression in one step Often yields very good results If you are interested in prediction and not inference (i.e.&nbsp;if identifying the relevant features is not a primary goal of the analysis), regularization will usually be better</p>
+<p><img src="figures/4.regularization.png" class="img-fluid" width="490"></p>
+<p>Shrinking penalty means, when the parameters/ coefficients are close to zero, it is shrinking them down to zero.</p>
+<section id="ridge-regression" class="level3" data-number="4.11.1">
+<h3 data-number="4.11.1" class="anchored" data-anchor-id="ridge-regression"><span class="header-section-number">4.11.1</span> Ridge regression</h3>
+<p>limits the size of the coefficients by adding an L1 penalty equal to the absolute value of the magnitude of coefficients, none of the coefficients are set to zero</p>
+<p>Ridge regression’s advantage over least squares is rooted in the bias-variance trade-off. As <span class="math inline">\(\lambda\)</span> increases, the flexibility of the ridge regression fit decreases, leading to decreased variance but increased bias.But as λ increases, the shrinkage of the ridge coefficient estimates leads to a substantial reduction in the variance of the predictions, at the expense of a slight increase in bias.</p>
+<p><img src="figures/4.ridge2.png" class="img-fluid" width="490"></p>
+<p>Ridge regression is very similar to least squares, except that the coefficients are estimated by minimizing a slightly different quantity. In particular, the ridge regression coefficient estimates the <span class="math inline">\(\hat{\beta}^R\)</span> are the values that minimize where <span class="math inline">\(\lambda \ge 0\)</span> is a tuning parameter, to be determined separately. The tuning parameter λ serves to control the relative impact of these two terms on the regression coefficient estimates. When λ = 0, the penalty term has no effect, and ridge regression will produce the least squares estimates. However, as λ→∞, the impact of the shrinkage penalty grows, and the ridge regression coefficient estimates will approach zero.</p>
+<p>If we increase lambda, we have a higher penality and in conclusion, we have smaller coefficients and a simpler model and in conclusion have less variance and more bias.Hence, ridge regression works best in situations where the least squares estimates have high variance. Ridge regression also has substantial computational advantages over best subset selection, which requires searching through 2p models. As we discussed previously, even for moderate values of p, such a search can be computationally unfeasible. In contrast, for any fixed value of λ, ridge regression only fits a single model, and the model-fitting procedure can be performed quite quickly. In fact, one can show that the computations required to solve, simultaneously for all values of λ, are almost identical to those for fitting a model using least squares</p>
+<p>Penalization as <code>shrinkage</code> to zero:</p>
+<p><img src="figures/4.ridge,lasso.png" class="img-fluid" width="490"></p>
+<p>If λ = 0 we have the least squared fit, if λ is sufficiently large, we have a null model, where each parameter is near to 0 (Ridge) or set to (Lasso) zero.</p>
+<p>Here we can see the connection of increasing lambda and how the coefficients, in this case Income, Limit, Rating and Student behave, if lambda increases: The left hand panel shows the connection between an increasing lambda and the value of of the standardized coefficient. If λ = 0 we have the least squared and the coefficients are very high. If λ increases, the ridge coefficient estimate shrinks to zero.</p>
+<p><img src="figures/4.ridge3.png" class="img-fluid" width="490"></p>
+<p>On the right hand panel the connection between the standardized coefficient is shown in relation to another value: It is a measure of the estimated parameter with least squares in connection with the penalty. The x-axis ranges from 1 (where λ = 0) to 0 () <span class="math inline">\(\lambda = \infty\)</span>. The x-axis shows the amount that the ridge regression coefficent estimates have been shrunken towards zero → a small value indicates that they have been shrunken very close to zero,</p>
+</section>
+<section id="how-to-select-λ" class="level3" data-number="4.11.2">
+<h3 data-number="4.11.2" class="anchored" data-anchor-id="how-to-select-λ"><span class="header-section-number">4.11.2</span> How to select λ</h3>
+<p>Both methods need the tuning parameter λ or the value of constraint <em>s</em>.</p>
+<ol type="1">
+<li>Option</li>
+</ol>
+<ul>
+<li>Divide the data into train/val/test</li>
+<li>Create models using different λ, fit them using the train data.</li>
+<li>Estimate E(MSE) in the validation data and select the best model.</li>
+<li>Estimate prediction error for the best model in the test datast.</li>
+</ul>
+<ol start="2" type="1">
+<li>Option (better):</li>
+</ol>
+<ul>
+<li>Divide the data into train/test</li>
+<li>Use cross-validation, for each k split of train –&gt; train/val:</li>
+<li>Create models using different λ.</li>
+<li>Estimate E(MSE) in the validation dataset</li>
+<li>Select the model with the minimum average MSE.</li>
+<li>Estimate prediction error in the test data</li>
+</ul>
+</section>
+<section id="lasso-regression" class="level3" data-number="4.11.3">
+<h3 data-number="4.11.3" class="anchored" data-anchor-id="lasso-regression"><span class="header-section-number">4.11.3</span> Lasso regression</h3>
+<p>try to minimize the sum of the coefficients and the MSE, R^2, a lot of coefficients are removed → huge advantage, because ridge regression include all p predictors in the final model. Although the penalty <span class="math inline">\(\lambda * \sum_{j&gt;0} \theta_i^2\)</span> of Ridge shrink all coefficients towards zero, it will not set any of them exactly to zero (unless <span class="math inline">\(\lambda = \infty\)</span>).</p>
+<p>→ Ridge including all predictors not a problem for model accuracy but for interpretability. Increasing the value of λ will tend to reduce the magnitudes of the coefficients, but will not result in exclusion of any of the variables.</p>
+<p>Bccause of that: Lasso was invented, similar to ridge. Only withouth the square. As with ridge regression, the lasso shrinks the coefficient estimates towards zero. However, in the case of the lasso, the ℓ1 penalty has the effect of forcing some of the coefficient estimates to be exactly equal to zero when the tuning parameter λ is sufficiently large.</p>
+<p>→ Lasso in advantage to Ridge: also performs variable selection, Lasso yields sparse models, only a subset of variables. Seen in the figure above, Lasso will have less predictors with a lower lambda.</p>
+<p>Why has Lasso a variable selection?</p>
+<p><img src="figures/4.ridge,lasso2.png" class="img-fluid" width="490"></p>
+<ul>
+<li>Least square solution <span class="math inline">\(\hat{\beta}\)</span>.</li>
+<li>Blue areas constrains for left Lasso and right panel Ridge</li>
+<li>red elipses, contours of the RSS, all points in one conture circle have the same RSS value</li>
+<li>when we perform lasso and ridge, we are trying to find the set of coefficient estimates that lead to the smallest RSS, subject to the constraint that there is a budget how large s (the variance, that determine S) can be</li>
+<li>lasso and ridge regression coefficient estimates are given by the first point at which an ellipse contacts the constraint region</li>
+<li>Since ridge regression has a circular constraint with no sharp points, this intersection will not generally occur on an axis, and so the ridge regression coefficient estimates will be exclusively non-zero. However, the lasso constraint has corners at each of the axes, and so the ellipse will often intersect the constraint region at an axis. When this occurs, one of the coefficients will equal zero.</li>
+</ul>
+<p><strong>Lasso or Ridge? Which has the better predictions?</strong></p>
+<p>neither ridge regression nor the lasso will universally dominate the other. In general, one might expect the lasso to perform better in a setting where a relatively small number of predictors have substantial coefficients, and the remaining predictors have coefficients that are very small or that equal zero. Ridge regression will perform better when the response is a function of many predictors, all with coefficients of roughly equal size. However, the number of predictors that is related to the response is never known a priori for real data sets. A technique such as cross-validation can be used in order to determine which approach is better on a particular data set.</p>
+<p>In R:</p>
+<p>#Lasso fit &lt;- glmnet(x, y, alpha = 1, lambda = 1.5)</p>
+<p>#Ridge fit &lt;- glmnet(x, y, alpha = 0, lambda = 1.5)</p>
+</section>
+<section id="standardization-of-predictors" class="level3" data-number="4.11.4">
+<h3 data-number="4.11.4" class="anchored" data-anchor-id="standardization-of-predictors"><span class="header-section-number">4.11.4</span> Standardization of predictors</h3>
+<p>is really important, set them to the same size makes a huge difference if for example temperature is measured with Fahrenheit or Celsius.</p>
+<p>The parameters has to be <em>scale equivalent</em>. For instance, consider the income variable, which is measured in dollars. One could reasonably have measured income in thousands of dollars, which would result in a reduction in the observed values of income by a factor of 1,000. Now due to the sum of squared coefficients term in the regression formulation, such a change in scale will not simply cause the ridge regression coefficient estimate for income to change by a factor of 1,000. In other words, <span class="math inline">\(X_i \hat{\beta_i\lambda}\)</span> will depend not only on the value of λ, but also on the scaling of the jth predictor.</p>
+<p>Consequently, all of the standardized predictors will have a standard deviation of one. As a result the final fit will not depend on the scale on which the predictors are measured.</p>
+</section>
+</section>
+<section id="in-r-1" class="level2" data-number="4.12">
+<h2 data-number="4.12" class="anchored" data-anchor-id="in-r-1"><span class="header-section-number">4.12</span> in R</h2>
+<pre><code>library(glmnet)
+# We need to input a predictor matrix x and a response (outcome) variable y, as well as a family = "gaussian" . Generate the input matrix:
+
+x_train &lt;- model.matrix(Salary ~ ., data = baseball_train)
+
+result &lt;- glmnet(x   = x_train[, -1],     # X matrix without intercept
+         y   = baseball_train$Salary, # Salary as response
+         family = "gaussian",       # Normally distributed errors
+         alpha = 1,           # LASSO penalty, if its set to 0 ridge regression
+         lambda = 15)           # Penalty value
+
+# extract coefficients out of the beta element
+rownames(coef(result))[which(coef(result) != 0)]
+
+# tuninng lamda without assigning a lambda will give you an object that contains sets of coefficients for different values of lambda
+
+#determine the lambda value using k-fold cross validation
+x_cv &lt;- model.matrix(Salary ~ ., bind_rows(baseball_train, baseball_valid))[, -1]
+result_cv &lt;- cv.glmnet(x = x_cv, y = c(baseball_train$Salary, baseball_valid$Salary), nfolds = 15) # setting the k to 15
+best_lambda &lt;- result_cv$lambda.min
+
+ #the output best lambda gives you the value of the tuning parameter</code></pre>
+<p>In this practical, you will learn how to handle many variables with regression by using variable selection techniques, shrinkage techniques, and how to tune hyper-parameters for these techniques. This practical has been derived from chapter 6 of ISLR. In addition, you will need <a href="https://r4ds.had.co.nz/iteration.html">for loops</a> (see also the <a href="https://adav-course-2022.netlify.app/3_mse_cv/basics">Basics: For Loops</a> tab on the course website under week 3), data manipulation techniques from <a href="https://dplyr.tidyverse.org/">Dplyr</a>, and the <code>caret</code> package (see lab week 3) to create a training, validation and test split for the used dataset</p>
+<p>Another package we are going to use is <code>glmnet</code>. For this, you will probably need to <code>install.packages("glmnet")</code> before running the <code>library()</code> functions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("glmnet")</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ISLR)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stats)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="best-subset-selection" class="level2" data-number="4.13">
+<h2 data-number="4.13" class="anchored" data-anchor-id="best-subset-selection"><span class="header-section-number">4.13</span> Best subset selection</h2>
+<p>Our goal is to to predict <code>Salary</code> from the <code>Hitters</code> dataset from the <code>ISLR</code> package. In this at home section, we will do the pre-work for best-subset selection. During the lab, we will continue with the actual best subset selection. First, we will prepare a dataframe <code>baseball</code> from the <code>Hitters</code> dataset where you remove the baseball players for which the <code>Salary</code> is missing. Use the following code:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>baseball <span class="ot">&lt;-</span> Hitters <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Salary))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can check how many baseball players are left using:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(baseball)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 263</code></pre>
+</div>
+</div>
+<ol type="1">
+<li><ol type="a">
+<li><strong>Create <code>baseball_train</code> (50%), <code>baseball_valid</code> (30%), and <code>baseball_test</code> (20%) datasets using the <code>createDataPartition()</code> function of the <code>caret</code> package.</strong></li>
+</ol></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define the training partition </span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>train_index <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(baseball<span class="sc">$</span>Salary, <span class="at">p =</span> .<span class="dv">5</span>, </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">list =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">times =</span> <span class="dv">1</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># split the data using the training partition to obtain training data</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>baseball_train <span class="ot">&lt;-</span> baseball[train_index,]</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="do">## remainder of the split is the validation and test data (still) combined </span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>baseball_val_test <span class="ot">&lt;-</span> baseball[<span class="sc">-</span>train_index,]</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co"># split the remaining 50% of the data in a validation and test set</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>val_index <span class="ot">&lt;-</span> <span class="fu">createDataPartition</span>(baseball_val_test<span class="sc">$</span>Salary, <span class="at">p =</span> .<span class="dv">6</span>, </span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">list =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">times =</span> <span class="dv">1</span>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>baseball_valid <span class="ot">&lt;-</span> baseball_val_test[val_index,]</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>baseball_test <span class="ot">&lt;-</span> baseball_val_test[<span class="sc">-</span>val_index,]</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Outcome of this section is that the data (100%) is split into:</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co"># training (~50%)</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co"># validation (~30%)</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="co"># test (~20%)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li><ol start="2" type="a">
+<li><strong>Using your knowledge of <code>ggplot</code> from lab 2, plot the salary information of the train, validate and test groups using <code>geom_histogram()</code> or <code>geom_density()</code></strong></li>
+</ol></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>hist <span class="ot">&lt;-</span> <span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_density</span>(<span class="at">data=</span> baseball_train, <span class="fu">aes</span>(<span class="at">x=</span>Salary, <span class="at">color=</span> <span class="st">"p"</span>), <span class="at">size=</span><span class="dv">1</span>, <span class="at">alpha=</span><span class="fl">0.2</span>)<span class="sc">+</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_density</span>(<span class="at">data=</span> baseball_valid, <span class="fu">aes</span>(<span class="at">x=</span>Salary, <span class="at">color=</span><span class="st">"o"</span>), <span class="at">size=</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_density</span>(<span class="at">data=</span> baseball_test, <span class="fu">aes</span>(<span class="at">x=</span>Salary, <span class="at">color=</span><span class="st">"g"</span>), <span class="at">size=</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a> <span class="fu">scale_color_manual</span>(<span class="at">name=</span> <span class="st">"color"</span>, <span class="at">values=</span><span class="fu">c</span>(<span class="st">"p"</span> <span class="ot">=</span> <span class="st">"purple"</span>, <span class="st">"o"</span> <span class="ot">=</span> <span class="st">"orange"</span>, <span class="st">"g"</span> <span class="ot">=</span> <span class="st">"green"</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"test"</span>, <span class="st">"valid"</span>, <span class="st">"train"</span>))<span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>hist</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="linear-regression_files/figure-html/hist-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>We will use the following function which we called <code>lm_mse()</code> to obtain the mse on the validation dataset for predictions from a linear model:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lm_mse <span class="ot">&lt;-</span> <span class="cf">function</span>(formula, train_data, valid_data) {</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a> y_name <span class="ot">&lt;-</span> <span class="fu">as.character</span>(formula)[<span class="dv">2</span>]</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a> y_true <span class="ot">&lt;-</span> valid_data[[y_name]]</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a> lm_fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(formula, train_data)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a> y_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm_fit, <span class="at">newdata =</span> valid_data)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a> <span class="fu">mean</span>((y_true <span class="sc">-</span> y_pred)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that the input consists of (1) a formula, (2) a training dataset, and (3) a test dataset.</p>
+<ol start="2" type="1">
+<li><strong>Try out the function with the formula <code>Salary ~ Hits + Runs</code>, using <code>baseball_train</code> and <code>baseball_valid</code>.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm_mse</span>(Salary <span class="sc">~</span>Hits <span class="sc">+</span> Runs, baseball_train, baseball_valid)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 192681.2</code></pre>
+</div>
+</div>
+<p>We have pre-programmed a function for you to generate a character vector for <em>all</em> formulas with a set number of <code>p</code> variables. You can load the function into your environment by <em>sourcing</em> the <code>.R</code> file it is written in:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>generate_formulas <span class="ot">&lt;-</span> <span class="cf">function</span>(p, x_vars, y_var) {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Input checking</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">%%</span> <span class="dv">1</span> <span class="sc">!=</span> <span class="dv">0</span>)           <span class="fu">stop</span>(<span class="st">"Input an integer n"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">&gt;</span> <span class="fu">length</span>(x_vars))    <span class="fu">stop</span>(<span class="st">"p should be smaller than number of vars"</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.character</span>(x_vars)) <span class="fu">stop</span>(<span class="st">"x_vars should be a character vector"</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.character</span>(y_var))  <span class="fu">stop</span>(<span class="st">"y_vars should be character type"</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># combn generates all combinations, apply turns them into formula strings</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">apply</span>(<span class="fu">combn</span>(x_vars, p), <span class="dv">2</span>, <span class="cf">function</span>(vars) {</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">paste0</span>(y_var, <span class="st">" ~ "</span>, <span class="fu">paste</span>(vars, <span class="at">collapse =</span> <span class="st">" + "</span>))</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can use it like so:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">generate_formulas</span>(<span class="at">p =</span> <span class="dv">2</span>, <span class="at">x_vars =</span> <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"x2"</span>, <span class="st">"x3"</span>, <span class="st">"x4"</span>), <span class="at">y_var =</span> <span class="st">"y"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "y ~ x1 + x2" "y ~ x1 + x3" "y ~ x1 + x4" "y ~ x2 + x3" "y ~ x2 + x4"
+[6] "y ~ x3 + x4"</code></pre>
+</div>
+</div>
+<ol start="3" type="1">
+<li><strong>Create a character vector of all predictor variables from the <code>Hitters</code> dataset. <code>colnames()</code> may be of help. Note that <code>Salary</code> is not a predictor variable.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>pred_vec <span class="ot">&lt;-</span> <span class="fu">colnames</span>(Hitters)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>pred_vec <span class="ot">&lt;-</span> pred_vec[<span class="sc">!</span>pred_vec <span class="sc">%in%</span> <span class="st">"Salary"</span>] <span class="sc">%&gt;%</span> <span class="fu">as.character</span>()</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>pred_vec </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "AtBat"     "Hits"      "HmRun"     "Runs"      "RBI"       "Walks"    
+ [7] "Years"     "CAtBat"    "CHits"     "CHmRun"    "CRuns"     "CRBI"     
+[13] "CWalks"    "League"    "Division"  "PutOuts"   "Assists"   "Errors"   
+[19] "NewLeague"</code></pre>
+</div>
+</div>
+<ol start="4" type="1">
+<li><strong>Using the function <code>generate_formulas()</code> (which is inlcuded in your project folder for lab week 4), generate all formulas with as outcome <code>Salary</code> and 3 predictors from the <code>Hitters</code> data. Assign this to a variable called <code>formulas</code>. There should be 969 elements in this vector.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>formulas <span class="ot">&lt;-</span> <span class="fu">generate_formulas</span>(<span class="at">p =</span> <span class="dv">3</span>, <span class="at">x_vars =</span> pred_vec, <span class="at">y_var =</span> <span class="st">"Salary"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>At home, you created the <code>baseball</code> dataframe which contains a subset <code>Hitters</code> dataset of the <code>ISLR</code> package: only the rows of the <code>Hitters</code> dataset for which the information on <code>Salary</code> is complete. In addtion, you divided the <code>baseball</code> dataset into a train, validation and test split, and generated all formulas with as outcome <code>Salary</code> and 3 predictors from the <code>Hitters</code> data. Now, within the lab, we are going to find the best set of 3 predictors in the <code>Hitters</code> dataset.</p>
+<ol start="5" type="1">
+<li><strong>Use a <code>for loop</code> to find the best set of 3 predictors in the <code>Hitters</code> dataset based on MSE. Use the <code>baseball_train</code> and <code>baseball_valid</code> datasets.</strong></li>
+</ol>
+<p>When creating the <code>for loop</code>, use the function <code>as.formula()</code> from the stats package to loop over all the equations contained in <code>formulas</code>. <code>as.formula()</code> transforms the characters of the input to a formula, so we can actually use it as a formula in our code.</p>
+<p>To select the best formula with the best MSE, use the function <code>which.min()</code>, which presents the lowest value from the list provided.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">#create a vector , we will fill fill with MSE values</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>mses <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">969</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># loop over all the formulas</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a> <span class="co">#we want to loop the lm for i model in one of 969 formuals</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a> <span class="co"># mses[i] is the reference to the vector we store the calculations for i in</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a> <span class="co"># lm_mse is our function</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a> <span class="co"># formulas[i] refers to one variation of the formukla</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a> <span class="co"># then the data set added </span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">969</span>){</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a> mses[i] <span class="ot">&lt;-</span> <span class="fu">lm_mse</span>(<span class="fu">as.formula</span>(formulas[i]), baseball_train, baseball_valid)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="co"># extract the minimal:</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>best_3_preds <span class="ot">&lt;-</span> formulas[<span class="fu">which.min</span>(mses)]</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>best_3_preds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Salary ~ Hits + CRBI + Division"</code></pre>
+</div>
+</div>
+<ol start="6" type="1">
+<li><strong>Do the same for 1, 2 and 4 predictors. Now select the best model from the models with the best set of 1, 2, 3, or 4 predictors in terms of its out-of-sample MSE</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>formula1 <span class="ot">&lt;-</span> <span class="fu">generate_formulas</span>(<span class="at">p =</span> <span class="dv">1</span>, <span class="at">x_vars =</span> pred_vec, <span class="at">y_var =</span> <span class="st">"Salary"</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>formula2 <span class="ot">&lt;-</span> <span class="fu">generate_formulas</span>(<span class="at">p =</span> <span class="dv">2</span>, <span class="at">x_vars =</span> pred_vec, <span class="at">y_var =</span> <span class="st">"Salary"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>formula4 <span class="ot">&lt;-</span> <span class="fu">generate_formulas</span>(<span class="at">p =</span> <span class="dv">4</span>, <span class="at">x_vars =</span> pred_vec, <span class="at">y_var =</span> <span class="st">"Salary"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>mses1 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">19</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">19</span>){</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a> mses1[i] <span class="ot">&lt;-</span> <span class="fu">lm_mse</span>(<span class="fu">as.formula</span>(formula1[i]), baseball_train, baseball_valid)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>best_1_preds <span class="ot">&lt;-</span> formulas[<span class="fu">which.min</span>(mses1)]</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>mses2 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">171</span>)</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">171</span>){</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a> mses2[i] <span class="ot">&lt;-</span> <span class="fu">lm_mse</span>(<span class="fu">as.formula</span>(formula2[i]), baseball_train, baseball_valid)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>best_2_preds <span class="ot">&lt;-</span> formulas[<span class="fu">which.min</span>(mses2)]</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>mses4 <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>,<span class="dv">3876</span>)</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3876</span>){</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a> mses4[i] <span class="ot">&lt;-</span> <span class="fu">lm_mse</span>(<span class="fu">as.formula</span>(formula4[i]), baseball_train, baseball_valid)</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>best_4_preds <span class="ot">&lt;-</span> formulas[<span class="fu">which.min</span>(mses4)]</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(mses)</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(mses1)</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(mses2)</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a><span class="fu">min</span>(mses4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 121754.9
+[1] 163444.9
+[1] 131244.8
+[1] 115821.2</code></pre>
+</div>
+</div>
+<ol start="7" type="1">
+<li><ol type="a">
+<li><strong>Calculate the test MSE for the model with the best number of predictors.</strong></li>
+</ol></li>
+</ol>
+<ol start="7" type="1">
+<li><ol start="2" type="a">
+<li><strong>Using the model with the best number of predictors, create a plot comparing predicted values (mapped to x position) versus observed values (mapped to y position) of <code>baseball_test</code>.</strong></li>
+</ol></li>
+</ol>
+<p>Through enumerating all possibilities, we have selected the best subset of at most 4 non-interacting predictors for the prediction of baseball salaries. This method works well for few predictors, but the computational cost of enumeration increases quickly to the point where it is not feasible to enumerate all combinations of variables:</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="linear-regression_files/figure-html/increase-1.png" class="img-fluid figure-img" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="regularization-with-glmnet" class="level2" data-number="4.14">
+<h2 data-number="4.14" class="anchored" data-anchor-id="regularization-with-glmnet"><span class="header-section-number">4.14</span> Regularization with glmnet</h2>
+<p><code>glmnet</code> is a package that implements efficient (quick!) algorithms for LASSO and ridge regression, among other things.</p>
+<ol start="8" type="1">
+<li><strong>Skim through the help file of <code>glmnet</code>. We are going to perform a linear regression with normal (gaussian) error terms. What format should our data be in?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>?glmnet</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>starting httpd help server ... done</code></pre>
+</div>
+</div>
+<p>Again, we will try to predict baseball salary, this time using all the available variables and using the LASSO penalty to perform subset selection. For this, we first need to generate an input matrix.</p>
+<ol start="9" type="1">
+<li><strong>First generate the input matrix using (a variation on) the following code. Remember that the “.” in a formula means “all available variables”. Make sure to check that this <code>x_train</code> looks like what you would expect.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>x_train <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(Salary <span class="sc">~</span> ., <span class="at">data =</span> baseball_train) </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(x_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 (Intercept) AtBat Hits HmRun Runs RBI Walks Years CAtBat CHits
+-Alan Ashby                1   315   81     7   24  38    39    14   3449   835
+-Alvin Davis               1   479  130    18   66  72    76     3   1624   457
+-Andre Dawson              1   496  141    20   65  78    37    11   5628  1575
+-Al Newman                 1   185   37     1   23   8    21     2    214    42
+-Argenis Salazar           1   298   73     0   24  24     7     3    509   108
+-Andres Thomas             1   323   81     6   26  32     8     2    341    86
+                 CHmRun CRuns CRBI CWalks LeagueN DivisionW PutOuts Assists
+-Alan Ashby          69   321  414    375       1         1     632      43
+-Alvin Davis         63   224  266    263       0         1     880      82
+-Andre Dawson       225   828  838    354       1         0     200      11
+-Al Newman            1    30    9     24       1         0      76     127
+-Argenis Salazar      0    41   37     12       0         1     121     283
+-Andres Thomas        6    32   34      8       1         1     143     290
+                 Errors NewLeagueN
+-Alan Ashby          10          1
+-Alvin Davis         14          0
+-Andre Dawson         3          1
+-Al Newman            7          0
+-Argenis Salazar      9          0
+-Andres Thomas       19          1</code></pre>
+</div>
+</div>
+<p>Intercept is one.</p>
+<p>The <code>model.matrix()</code> function takes a dataset and a formula and outputs the predictor matrix where the categorical variables have been correctly transformed into dummy variables, and it adds an intercept. It is used internally by the <code>lm()</code> function as well!</p>
+<ol start="10" type="1">
+<li><strong>Using <code>glmnet()</code>, perform a LASSO regression with the generated <code>x_train</code> as the predictor matrix and <code>Salary</code> as the response variable. Set the <code>lambda</code> parameter of the penalty to 15. NB: Remove the intercept column from the <code>x_matrix</code> – <code>glmnet</code> adds an intercept internally.</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x   =</span> x_train[, <span class="sc">-</span><span class="dv">1</span>],     <span class="co"># X matrix without intercept</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>         <span class="at">y   =</span> baseball_train<span class="sc">$</span>Salary, <span class="co"># Salary as response</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">family =</span> <span class="st">"gaussian"</span>,       <span class="co"># Normally distributed errors</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">alpha =</span> <span class="dv">1</span>,           <span class="co"># LASSO penalty</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">lambda =</span> <span class="dv">15</span>)           <span class="co"># Penalty value</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="11" type="1">
+<li><strong>The coefficients for the variables are in the <code>beta</code> element of the list generated by the <code>glmnet()</code> function. Which variables have been selected? You may use the <code>coef()</code> function.</strong></li>
+</ol>
+<p>Extract all coefficients, without the coefficients that set to zeor.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(<span class="fu">coef</span>(result))[<span class="fu">which</span>(<span class="fu">coef</span>(result) <span class="sc">!=</span><span class="dv">0</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "(Intercept)" "Hits"        "Walks"       "CHmRun"      "CRuns"      
+ [6] "CRBI"        "DivisionW"   "PutOuts"     "Assists"     "NewLeagueN" </code></pre>
+</div>
+</div>
+<ol start="12" type="1">
+<li><strong>Create a predicted versus observed plot for the model you generated with the <code>baseball_valid</code> data. Use the <code>predict()</code> function for this! What is the MSE on the validation set?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>x_valid <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(Salary <span class="sc">~</span> ., <span class="at">data =</span> baseball_valid)[,<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>y_pred <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">predict</span>(result, <span class="at">newx =</span> x_valid))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>?Hitters</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">Predicted =</span> y_pred, <span class="at">Observed =</span> baseball_valid<span class="sc">$</span>Salary) <span class="sc">%&gt;%</span> </span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Predicted, <span class="at">y =</span> Observed)) <span class="sc">+</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_abline</span>(<span class="at">slope =</span> <span class="dv">1</span>, <span class="at">intercept =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Predicted versus observed salary"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="linear-regression_files/figure-html/predobs-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="cf">function</span>(y_true, y_pred) {</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">mean</span>((y_true <span class="sc">-</span> y_pred)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mse</span>(baseball_valid<span class="sc">$</span>Salary, y_pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 127722.9</code></pre>
+</div>
+</div>
+</section>
+<section id="tuning-lambda" class="level2" data-number="4.15">
+<h2 data-number="4.15" class="anchored" data-anchor-id="tuning-lambda"><span class="header-section-number">4.15</span> Tuning lambda</h2>
+<p>Like many methods of analysis, regularized regression has a <em>tuning parameter</em>. In the previous section, we’ve set this parameter to 15. The <code>lambda</code> parameter changes the strength of the shrinkage in <code>glmnet()</code>. Changing the tuning parameter will change the predictions, and thus the MSE. In this section, we will select the tuning parameter based on out-of-sample MSE.</p>
+<ol start="13" type="1">
+<li><ol type="a">
+<li><strong>Fit a LASSO regression model on the same data as before, but now do not enter a specific <code>lambda</code> value. What is different about the object that is generated? Hint: use the <code>coef()</code> and <code>plot()</code> methods on the resulting object.</strong></li>
+</ol></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>result_nolambda <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x =</span> x_train[, <span class="sc">-</span><span class="dv">1</span>], <span class="at">y =</span> baseball_train<span class="sc">$</span>Salary, </span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">family =</span> <span class="st">"gaussian"</span>, <span class="at">alpha =</span> <span class="dv">1</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># This object contains sets of coefficients for different values of lambda,</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="co"># i.e., different models ranging from an intercept-only model (very high </span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="co"># lambda) to almost no shrinkage (very low lambda).</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(result_nolambda)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="linear-regression_files/figure-html/lambdas-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ol start="13" type="1">
+<li><ol start="2" type="a">
+<li><strong>To help you interpret the obtained plot, Google and explain the qualitative relationship between L1 norm (the maximum allowed sum of <code>coefs</code>) and <code>lambda</code>.</strong></li>
+</ol></li>
+</ol>
+<p>For deciding which value of lambda to choose, we could work similarly to what we have don in the best subset selection section before. However, the <code>glmnet</code> package includes another method for this task: cross validation.</p>
+<ol start="14" type="1">
+<li><strong>Use the <code>cv.glmnet</code> function to determine the <code>lambda</code> value for which the out-of-sample MSE is lowest using 15-fold cross validation. As your dataset, you may use the training and validation sets bound together with bind_rows(). What is the best lambda value?</strong></li>
+</ol>
+<p><strong>Note</strong> You can remove the first column of the <code>model.matrix</code> object, which contains the intercept, for use in <code>cv.glmnet</code>. In addition, To obtain the best lambda value, you can call the output value <code>lambda.min</code> from the object in which you stored the results of calling <code>cv.glmnet</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>x_cv <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(Salary <span class="sc">~</span> ., <span class="fu">bind_rows</span>(baseball_train, baseball_valid))[, <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>result_cv <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(<span class="at">x =</span> x_cv, <span class="at">y =</span> <span class="fu">c</span>(baseball_train<span class="sc">$</span>Salary, baseball_valid<span class="sc">$</span>Salary), <span class="at">nfolds =</span> <span class="dv">15</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>best_lambda <span class="ot">&lt;-</span> result_cv<span class="sc">$</span>lambda.min</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>best_lambda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.04876</code></pre>
+</div>
+</div>
+<ol start="15" type="1">
+<li><strong>Try out the plot() method on this object. What do you see? What does this tell you about the bias-variance tradeoff?</strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(result_cv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="linear-regression_files/figure-html/cvplot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>the MSE is high with very small values of lambda (no shrinkage) and with very large values of lambda (intercept-only model). introducing a bit of bias lowers the variance relatively strongly (fewer variables in the model) and therefore the MSE is reduced.</p>
+<p>It should be noted, that for all these previous exercises they can also be completed using the <strong>Ridge Method</strong> which is not covered in much depth during this practical session. To learn more about this method please refer back Section 6.2 in the An Introduction to Statistical Learning Textbook.</p>
+</section>
+<section id="comparing-methods-advanced" class="level2" data-number="4.16">
+<h2 data-number="4.16" class="anchored" data-anchor-id="comparing-methods-advanced"><span class="header-section-number">4.16</span> Comparing methods (advanced)</h2>
+<p>This last exercise is optional. You can also opt to view the answer when made available and try to understand what is happening in the code.</p>
+<ol start="16" type="1">
+<li><strong>Create a bar plot comparing the test set (baseball_test) MSE of (a) linear regression with all variables, (b) the best subset selection regression model we created, (c) LASSO with lambda set to 50, and (d) LASSO with cross-validated lambda. As training dataset, use the rows in both the <code>baseball_train</code> and <code>baseball_valid</code></strong></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create this new training dataset and the test dataset</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(baseball_train, baseball_valid)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>x_test <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(Salary <span class="sc">~</span> ., <span class="at">data =</span> baseball_test)[, <span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a><span class="co"># generate predictions from the models</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>y_pred_ols <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">lm</span>(Salary <span class="sc">~</span> ., <span class="at">data =</span> train_data), <span class="at">newdata =</span> baseball_test)</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>y_pred_sub <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">lm</span>(Salary <span class="sc">~</span> Runs <span class="sc">+</span> CHits <span class="sc">+</span> Division <span class="sc">+</span> PutOuts, <span class="at">data =</span> train_data),</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">newdata =</span> baseball_test)</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="co"># these two use x_cv from the previous exercises</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>y_pred_las <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">predict</span>(<span class="fu">glmnet</span>(x_cv, train_data<span class="sc">$</span>Salary, <span class="at">lambda =</span> <span class="dv">50</span>), <span class="at">newx =</span> x_test))</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>y_pred_cv <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">predict</span>(result_cv, <span class="at">newx =</span> x_test, <span class="at">s =</span> best_lambda))</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate MSEs</span></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>mses <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a> <span class="fu">mse</span>(baseball_test<span class="sc">$</span>Salary, y_pred_ols),</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a> <span class="fu">mse</span>(baseball_test<span class="sc">$</span>Salary, y_pred_sub),</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a> <span class="fu">mse</span>(baseball_test<span class="sc">$</span>Salary, y_pred_las),</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a> <span class="fu">mse</span>(baseball_test<span class="sc">$</span>Salary, y_pred_cv)</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a plot</span></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">Method =</span> <span class="fu">as_factor</span>(<span class="fu">c</span>(<span class="st">"lm"</span>, <span class="st">"subset"</span>, <span class="st">"lasso"</span>, <span class="st">"cv_las"</span>)), <span class="at">MSE =</span> mses) <span class="sc">%&gt;%</span> </span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a> <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Method, <span class="at">y =</span> MSE, <span class="at">fill =</span> Method)) <span class="sc">+</span></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">col =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a> <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Comparison of test set MSE for different prediction methods"</span>) <span class="sc">+</span></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a> <span class="fu">scale_fill_viridis_d</span>() <span class="co"># different colour scale</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="linear-regression_files/figure-html/barplot-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="conclusions" class="level2" data-number="4.17">
+<h2 data-number="4.17" class="anchored" data-anchor-id="conclusions"><span class="header-section-number">4.17</span> Conclusions</h2>
+<ul>
+<li>By using feature selection or regularization, we can obtain better prediction accuracy and model interpretability</li>
+<li>Feature selection includes best subset, forward and backward selection</li>
+<li>Best subset selection performs best, but it comes at a prize Regularization includes LASSO and Ridge</li>
+<li>LASSO shrinks unimportant parameters to truly zero, while Ridge shrinks them to small values</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./model-accuracy.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Model accuracy and fit</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./classification.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">classification</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
