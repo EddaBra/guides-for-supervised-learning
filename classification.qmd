@@ -1,0 +1,895 @@
+---
+title: "classification"
+---
+
+## Readings
+
+[ISLR](https://static1.squarespace.com/static/5ff2adbe3fe4fe33db902812/t/6062a083acbfe82c7195b27d/1617076404560/ISLR%2BSeventh%2BPrinting.pdf):
+
+-   Chapter 4: Classification
+
+## Classification
+
+Supervised Learning two methods:
+
+-   regression (numerical or metric, linear correlations)
+-   classification, predict to which category an observation belongs (qualitative outcome)
+-   many supervised learning problems concern categorical outcome - cancer, weather, banking data (default on payment of debt), images (is a cat on the photo or not?), news articles (in rubrics like sport, politics)
+
+### Types of classification
+
+![](figures/5.types.png){width="490"}
+
+-   most of the methods based on binary classification, because no order, if you transform qualitative categories in numbers
+-   so in most cases multi-class classification must be transformed into binary classification → easiest way: one-vs-all-model
+
+## Which model?
+
+**Parametric or non-parametric classifiers**
+
+![](figures/5.para,non.png){width="490"}
+
+Parametric model:
+
+-   When we have a data set, we made assumption about the data set
+-   we select from our assumption relevant predictors
+-   logistic regression (this lecture)
+
+Non-parametric model:
+
+-   as many predictors as we want
+-   less assumption about the data
+-   requires more data
+-   KNN (this lecture) or decision trees (lecture 8)
+
+**Generative & Discriminative models**
+
+Generative:
+
+-   Represent both the data and the labels
+-   focus of probability: has a person cancer? yes or no? How probable is yes or no for each observation?
+-   Often, makes use of conditional independence and priors
+-   Models of data may apply to future prediction problems
+-   Examples: Naïve Bayes classifier, Bayesian network
+
+Discriminative:
+
+-   Learn to directly predict the labels from the data
+-   Often, assume a simple boundary (e.g., linear), not want to estimate probability for each observation, are looking for the relationship, the correlation
+-   Often easier to predict a label from the data than to model the data
+-   Examples: Logistic regression, SVM, decision tree
+
+Generative classifiers try to model the data. Discriminative classifiers try to predict the label.
+
+### Why use another model than logistic regression?
+
+-   when substantial separation between two classes, the parameter estimates for logistic regression quite unstable
+-   distribution of predictors approxiametely normal and small sample size
+-   more than two response categories
+-   then: use the bayes classifier! Three classifiers, that use different estimates to approximate the Bayes classifier (see ISLR p. 142 -158)
+-   linear discriminate analysis
+-   quadratic discirminant analysis
+-   naive Bayes
+
+## Classification algorithms
+
+There is a lot! Here the most popular:
+
+-   K-nearest neighbors
+-   Logistic regression
+-   Naive Bayes
+-   Neural networks (deep learning)
+-   Support vector machine
+-   Decision tree
+-   Random forest
+
+**Which algorithm to choose: Generalization**
+
+How well does a learned model generalize from the data it was trained on to a new test set?
+
+![](figures/5.para,non.png){width="200"}
+
+No free Lunch Theorem: Variance-Bias Trade Off → there is no optimal solution of analyzing data !
+
+## K-nearest neighbors
+
+-   One of the most simple (supervised) machine learning methods
+-   Based on feature similarity: how similar is a data point to its neighbor(s) and classifies the data point into the class it is most similar to.
+-   k determines, how many neighbors are included to assign a value to the missing observation, take the average of the neighbors
+-   different similarities are there for methodolical determination of values, we as Data Scientists decide, which method we use to deterine similarity
+-   this is a non-parameteric model: does not make assumptions about the data set
+-   this is lazy algorithm: memorizes the training data set itself instead of learning a function from it, we don´t learn any functions, we don´t get any parameters as a result
+-   Can be used for both classification and regression (but more commonly used for classification)
+-   Although a very simple approach, KNN can often produce classifiers that are surprisingly good!
+
+**The model:**
+
+Given the memorized training data, and a new data point (test observation):
+
+-   Identify the *K* closests points in the training data to the new data point $X_0$.
+-   *K* is a hyper parameter, cannot be computed like the normal parameters out of the data → has to be set by the Scientist but: - Hyper parameter tuning: Assign different values to *K* and compute models with that
+-   ellbow method for KNN: Try different values and choose the value with the best model performance
+-   This set of 'nearest neighbors' we call Estimate the probability that the new data point belongs to category by $$
+        PR(Y=j | X=x_0) = \frac{1}{K} \sum_{i \epsilon N_0}I (y_i = j)
+        $$
+-   (so, the fraction of points in whose response equal *j*) - Majority vote: classify the test observation to the categroy with the largest probability
+
+![](figures/5.KNN.png){width="250"}
+
+**Tuning Parameter K**
+
+-   Results obtained with KNN highly depend on chosen value for *K* , the number of neighbors used
+-   Small *K* (e.g.,*K* = 1): low bias but very high variance, 'overly flexible decision boundary' (see next slides)
+-   Large *K*: low-variance but high-bias, 'decision boundary' that is close to linear
+-   if *K* is too large, e.g. equal to sample size, we compute the same value for each observation, we want to predict The optimal value for *K* needs to be determined using a (cross-)validation approach
+
+![](figures/5.K.png){width="400"} ![](figures/5.K2.png){width="400"}
+
+-   decision boundary is the line, that separate the observations and assign them to a class
+-   in the first, k=1 is the best solution, because the obersvations are very clear separated
+-   for less well seperated observations, an higher k is better
+-   left once are high variance (overfitting), right once are high biased (underfitting)
+-   k=5 must not be the best solution, we have to check other values
+-   one option: do clustering before!
+
+**in R**
+
+```         
+#split the data set int train, validation, test
+## create class predictions for different ks using the train data to learn the model and the test data to evaluate the parameters
+library(class)
+knn_5_pred <- knn(
+  train = default_train %>% select(-default),
+  test  = default_valid  %>% select(-default),
+  cl    = as_factor(default_train$default),
+  k     = 5
+)
+```
+
+## Logistic regression
+
+-   Used to predict the probability that belongs to one of two categories (i.e., a binary outcome), for example:
+
+    -   smoking/ non smoking
+    -   pass/ fail an exam
+
+-   Can be extended to model \> 2 outcome categories: multinomial logistic regression (not treated in this course)
+
+-   Other option to model \> 2 outcome categories: Neural networks, naive Bayes, linear discriminant analysis (not treated in this course, but treated in ISLR)
+
+![](figures/5.logistic.png){width="400"}
+
+$$
+Want 0 \le H_\theta (x) \le 1
+$$
+
+$$
+H_\theta (x) = \theta^T x
+$$
+
+$$
+H_\theta (x) = g(\theta^T x)
+$$
+
+sigmoid function /logistic function:
+
+$$
+g(z) = \frac{1}{1 + e^-z}
+$$
+
+![](figures/5.logistic2.png){width="300"}
+
+![](figures/5.logistic3.png){width="300"}
+
+### Why can linear regression not be used on this type of data?
+
+-   Linear regression would predict impossible outcomes ( Pr (x) \< 0 and \> 1)
+
+-   Assumption of normally distributed residuals heavily violated
+
+-   To avoid this problem, we use a 'trick': we use a logistic \`link function (logit)\`
+
+-   Advantage: all predicted probabilities are above 0 and below 1
+
+-   so for the example below:
+
+    -   Default is category, the Y outcome
+
+    -   balance is X
+
+    -   e is Eulersche Zahl and in R with `exp` written
+
+$$
+Pr (Default = yes| balance) = \frac{e^{\beta_0 + \beta1 balance}}{ 1 + exp^{\beta_0 + \beta1 balance}}
+$$
+
+-   left: normal linear regression with `Default = yes` (negative values!, not possible!)
+
+-   right: logistic regression, all probabilities are positive!
+
+![](figures/5.logistic4.png){width="15cm"}
+
+-   to fit this model. maximum likelihood → always S-shaped form
+
+### odds
+
+-   can take a value between 0 and $\infty$ . Values very near to 0 or to $\infty$ indicate very low or very high probability. This is the formula of the quantity:
+
+$$
+\frac{Pr(Y=1)}{Pr(Y=0)} = \frac{pi}{1-pi} = e^{\beta_0 + \beta_1X_1 + \dots}
+$$
+
+-   used instead of probability → Es geht von der Idee der Chancen, der odds aus. Eine Möglichkeit, Wahrscheinlichkeiten anzugeben. Wie hoch ist die Chance, dass ein Ereignis eintritt gegenüber einem anderen?
+
+    -   Beispiel: Münzwurf, 1:1, 1 Chance ist Kopf, eine andere Chance ist Zahl
+
+    -   Beispiel 2: Würfeln einer 6, 1:5, eine Zahl 6 ist möglich, andere 5 Zahlen auch möglich
+
+-   Hence, when using logistic regression, we are modelling the log of the odds. Odds are a way of quantifying the probability of an event *E*.
+
+    -   odds for an event *E* are: $$
+        odds(E) = \frac{Pr(E)}{Pr(E^c)}  = \frac{Pr(E)}{1-Pr(E)} 
+        $$
+    -   The odds of getting head in a coin toss is:
+
+$$
+odds(heads) = \frac{Pr(heads)}{Pr(tails)} = \frac{Pr(heads)}{1- Pr(heads)} = odds(heads) = \frac{0.5}{1-0.5} = 1
+$$
+
+-   Another example: game Lingo 44 balls, 26 are blue, 6 red and 2 are green
+
+    -   choosing blue:
+
+$$
+odds(blue) =\frac{36} {6} = \frac{46/44} {8/44} = 4.5
+$$
+
+-   Hence, odds of 1 indicate an equal likelihood of event occurring or not occurring. Odds \< 1 indicate a lower likelihood of the event, odds \>1 indicate higher likelihood
+
+$$
+ln(odds) = \beta_0 + \beta_1X_1 + \dots
+$$
+
+So the linear part of the function models the log of the odds. With the log we have a model where X is linear.
+
+### How to estimate the coefficients?
+
+-   maximum likelihood method:
+
+    -   for binaries, e. g. 1 = smoking, 0 = not smoking
+
+    -   approach: estimate $\beta_0$ and $\beta_1$ such that the probability $\hat{p}(x_i)$ of an individual with $Y=1$ corresponds as closely as possible to the observed $Y=1$ for an individual.
+
+-   logistic function:
+
+$$
+l(\beta_0, \beta_1) = \prod_{i:y_i=1} p(x_i) \prod_{i´: y_i´= 0} (1- p(xi´))
+$$
+
+-   $\beta_0$ and $\beta_1$ are chosen to maximize the likelihood function.
+
+### Interpretation regression coefficients
+
+-   in linear regression one unit change in X is one unit change in Y, in logistic regression instead: with increase in X by one unit change the log odds by $\beta_1$ → multiplies the odds by $e^{\beta_1}$ .
+-   with standard error measure the accuracy of the coefficients.
+-   z-statistic: a large (absolute) value in it indicates evidence against the null hypothesis
+-   p-value: significant or not?
+-   estimated intercept plays not a role!
+-   because relationship between $p(X)$ and $X$ are not a straight line, a unit change in $X$ does not change $p(X)$ and $\beta_1$ does not correspond to the change in $X$. But we direction is is corresponding, negative or positive relationship!
+-   qualitatively: positive or negative effect of the predictor on the log of the odds (logit)
+-   quantitatively: effect on the pdds is $exp(\beta)$
+-   effect statistically significant?
+
+Making Predictions:
+
+-   making predictions by filling hin the equatation
+
+$$
+\hat{p}(X) = \frac{e^{\hat{\beta_0} + \hat{\beta_1X} +\hat{\beta_pX_p}}} {1 + e^{\hat{\beta_0} + \hat{\beta_1X}+\hat{\beta_pX_p}}} 
+$$
+
+**Example:** We have the following coefficients for a multiple logistic regression:
+
+![](figures/5.titanic.png){width="400"}
+
+![](figures/5.titanic2.png){width="400"} How can we compare different classes?
+
+1.  30 year old female first class
+
+```{r}
+(exp(3.76 - (0.039*30))) /  (1 + exp(3.76 + ((-0.039)*30)))
+```
+
+2.  45 old male from 3rd class?
+
+```{r}
+(exp(3.76 - (2.521*1) - (2.631*1) - (0.039*45))) / (1-exp(3.76 - (2.521*1) - (2.631*1)-(0.039*45)))
+```
+
+While a 30 year old female in first class has a probability of 93% survival rate, a 45 old male from 3rd class only have a 4 % rate.
+
+### Multinominal Logistic Function
+
+-   expand logistic regression to more than 2 classes
+-   single class is chosen as base line (not really necessary, because estimates change, but key model outputs and log odds stay the same)
+-   so instead the softmax coding!
+
+$$
+log(\frac{Pr(Y=k| X=x)}{Pr(Y=K| X=x)} ) = \beta_{k0} + \beta_{k1x1} + \beta_{kpxp}
+$$
+
+log odds softmax coding function, which treat all K equally without baseline:
+
+$$
+Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1x1} +\beta_{kpxp}}} { \sum_{l=1}^K  e^{\beta_{k0}+ \beta_{k1x1} +\beta_{kpxp}}}
+$$
+
+## in R
+
+```         
+## make a logistic regression using training data
+library(glm)
+lr_mod <- glm(default ~ ., family = binomial, data = default_train)
+
+#get the coefficients
+coefs <- coef(lr_mod)
+```
+
+### Evaluating classifiers
+
+When applying classifiers, we have new options to evaluate how well a classifier is doing besides model fit:
+
+-   Confusion matrix (used to obtain most measures below)
+-   Sensitivity ('Recall')
+-   Specificity
+-   Positive predictive value ('Precision')
+-   Negative predictive value
+-   Accuracy (and error rate)
+-   ROC and area under the curve
+-   For even more: <https://en.wikipedia.org/wiki/Sensitivity_and_specificity>
+
+### Most important: Confusion Matrix
+
+```         
+p_ped <- predict(log_mod_titanic, type = "response")
+with(titanic, table(p_ped > 0.5, Survived))
+
+### Survived
+### 0 1
+### FALSE 372 91
+### TRUE 71 222
+
+or in this way:
+conf_2NN <- table(predicted = knn_2_pred, true = default_valid$default)
+conf_2NN
+  ###          true
+  ### predicted   No  Yes
+  ###       No  1885   46
+  ###       Yes   48   20
+```
+
+-   Now we are looking at the confusion matrix of the complete data set.Even better would be to split the data, fit the model on the training data only and compute the confusion matrix on the validation set only.
+-   We set a threshold for survival of 0.5. That is, for everyone with a predicted probability \> 0.5, we assume he/she survived, and a predicted probability of $\le$ 0.5 we assume he/she did not survive.
+-   In case of a binary outcome (e.g., survival yes or no), we either correctly classify, or make two kind of mistakes:
+-   Label someone as survivor who has survived (TP)
+-   Label someone who died and who has died (TN)
+-   Label a survivor as someone who died False negative (FN)
+-   Label someone who died as a survivor False positive (FP)
+
+### Measures
+
+-   most important: Error rate and accuracy!
+
+![](figures/5.confusion.png){width="400"}
+
+![](figures/5.confusion2.png){width="400"}
+
+**Error rate (ERR)** is calculated as the number of all incorrect predictions divided by the total number of the dataset. The best error rate is 0.0, whereas the worst is 1.0.
+
+$$
+ERR = \frac{FP + FN}{P + N}
+$$
+
+**Accuracy (ACC)** is calculated as the number of all correct predictions divided by the total number of the dataset. The best accuracy is 1.0, whereas the worst is 0.0. It can also be calculated by `1 – ERR` $$
+ACC = \frac{TP + TN}{P + N}
+$$ Error costs of positives and negatives are usually different. For instance, one wants to avoid false negatives more than false positives or vice versa. Other basic measures, such as sensitivity and specificity, are more informative than accuracy and error rate in such cases.
+
+**Sensitivity (SN)** is calculated as the number of correct positive predictions divided by the total number of positives. It is also called recall (REC) or true positive rate (TPR). The best sensitivity is 1.0, whereas the worst is 0.0.
+
+$$
+SN = \frac{TP}{TP + FN} = \frac{TP}{P}
+$$ **Specificity (SP)** is calculated as the number of correct negative predictions divided by the total number of negatives. It is also called true negative rate (TNR). The best specificity is 1.0, whereas the worst is 0.0. $$
+SP = \frac{TN}{TN + FP} = \frac{TN}{N}
+$$ **Precision (PREC)** is calculated as the number of correct positive predictions divided by the total number of positive predictions. It is also called positive predictive value (PPV). The best precision is 1.0, whereas the worst is 0.0.
+
+$$
+PREC = \frac{TP}{TP + FP}
+$$
+
+**False positive rate (FPR)** is calculated as the number of incorrect positive predictions divided by the total number of negatives. The best false positive rate is 0.0 whereas the worst is 1.0. It can also be calculated as 1 -- specificity.
+
+$$
+FPR = \frac{FP}{TN + FP} = 1 -SP
+$$
+
+**Threshold**
+
+-   Moving around the threshold affects the sensitivity and specificity!
+-   Moving the threshold especially makes sense when the predicted categories are unbalanced. For example, many more non survivors compared to survivors in the data set.
+
+### ROC Curve
+
+-   The Receiver Operating Characteristics (ROC) plot is a popular measure for evaluating classifier performance.
+-   ROC curve is a popular graphic for simultaneously displaying the true and false positive rate *for all possible thresholds*
+-   The ROC plot is a model-wide evaluation measure that is based on two basic evaluation measures -- specificity and sensitivity. Specificity is a performance measure of the whole negative part of a dataset, whereas sensitivity is a performance measure of the whole positive part.
+-   The overall performance of a classifier, summarized over all possible thresholds, is given by the area under the curve (AUC)
+
+![](figures/5.roc.png){width="350"}
+
+A classifier with the random performance level always shows a straight line from the origin (0.0, 0.0) to the top right corner (1.0, 1.0). Two areas separated by this ROC curve indicates a simple estimation of the performance level. ROC curves in the area with the top left corner (0.0, 1.0) indicate good performance levels, whereas ROC curves in the other area with the bottom right corner (1.0, 0.0) indicate poor performance levels.
+
+![](figures/5.roc2.png){width="350"}
+
+A classifier with the perfect performance level shows a combination of two straight lines -- from the origin (0.0, 0.0) to the top left corner (0.0, 1.0) and further to the top right corner (1.0, 1.0). It is important to notice that classifiers with meaningful performance levels usually lie in the area between the random ROC curve (baseline) and the perfect ROC curve.
+
+Comparison of multiple classifiers is usually straight-forward especially when no curves cross each other. Curves close to the perfect ROC curve have a better performance level than the ones closes to the baseline.
+
+![](figures/5.roc3.png){width="350"}
+
+Another advantage of using the ROC plot is a single measure called the AUC (area under the ROC curve) score. As the name indicates, it is an area under the curve calculated in the ROC space. One of the easy ways to calculate the AUC score is using the trapezoidal rule, which is adding up all trapezoids under the curve. Although the theoretical range of AUC score is between 0 and 1, the actual scores of meaningful classifiers are greater than 0.5, which is the AUC score of a random classifier.
+
+![](figures/5.roc4.png){width="350"}
+
+###Assignment
+
+Due to ascension day, this lab will not be a guided lab, but a lab at home. Note that the content covered in this lab is (just like all other labs) exam material. In this lab at home, two different classification methods will be covered: K-nearest neighbours and logistic regression. **Please send your knitted .html file with the completed lab to your lab teacher before next lecture (Tuesday May 31st 9AM) to be marked as 'attended' for this lab.** Solutions to this lab will be posted on Tuesday May 31st on the course website, and will shortly be discussed during lab 6.
+
+One of the packages we are going to use is [class](https://cran.r-project.org/web/packages/class/class.pdf). For this, you will probably need to `install.packages("class")` before running the `library()` functions. In addition, you will again need the `caret` package to create a training and a validation split for the used dataset (*note*: to keep this at home lab compact, we will only use a training and validation split, and omit the test dataset to evaluate model fit). You can download the student zip including all needed files for practical 5 [here](https://surfdrive.surf.nl/files/index.php/s/J58fxg4AkOSKTcK).
+
+```{r packages, warning = FALSE, message = FALSE}
+library(MASS)
+library(class)
+library(caret)
+library(ISLR)
+library(tidyverse)
+library(viridis)
+library(ggthemes)
+```
+
+```{r seed, include = FALSE}
+set.seed(45)
+```
+
+This practical will be mainly based around the `default` dataset which contains credit card loan data for 10 000 people. With the goal being to classify credit card cases as `yes` or `no` based on whether they will default on their loan.
+
+```{r, results= 'hide'}
+data("Default")
+force(Default)
+str(Default)
+```
+
+4 Variables, part of the ISLR book!
+
+Research subject: Credit card loan data Sample: 10.000 customers of a bank Predictor: - student - default - balance - income
+
+predicted outcome: credit card case yes / no
+
+1.  **Create a scatterplot of the `Default` dataset, where `balance` is mapped to the x position, `income` is mapped to the y position, and `default` is mapped to the colour. Can you see any interesting patterns already?**
+
+```{r defaultplot1}
+Plot1<-ggplot(Default, aes(x= balance, y= income, color= default))+
+  geom_point()+
+  labs( x= "Balance",
+        y= "Income",
+        color = "Default",
+        title= "Balance and Income of customers grouped by default")+
+  scale_color_viridis(discrete= TRUE)+
+  theme_minimal()
+Plot1
+```
+
+First of all, no correlation between Balance and Income is obersable. That is really counterintuitive, because you would expect, with higher balance and higher income and vice versa. On explanation could be, that people that earn a lot of money are good in finance and invest their money in the stock market or in real estate and consequently do not have a higher balance. In my opinion, balance is the y variable and income the x variable, so I had mapped them the other way around. Because why should Balance influence the income? Do you get interest rates on your balances? What you can see further, is that customers with higher balance has often a default, whereas people with lower balance has less often a default.
+
+2.  **Add `facet_grid(cols = vars(student))` to the plot. What do you see?**
+
+```{r defaultplot2}
+ggplot(Default, aes(x= balance, y= income, color= default))+
+  geom_point()+
+  labs( x= "Balance",
+        y= "Income",
+        color = "Default",
+        title= "Balance and Income of customers",
+        subtitle= "grouped by default and student")+
+  scale_color_viridis(discrete= TRUE)+
+  theme_minimal()+
+  facet_grid(cols= vars(student))
+```
+
+What you can see now, is that students have by far less income then not students. Here, no one has an income above 40.000, whereas in the not student group the only a few earn less than 10.000 and 40.000 ?\$ seems like to be the centre span. Further, studens tend to have a higher balance, than non-students. Having a default look very similar distributed in both groups. In both groups, with higher balance more customers have a default.
+
+3.  **For use in the KNN algorithm, transform "student" into a dummy variable using `ifelse()` (0 = not a student, 1 = student). Then, randomly split the Default dataset into a training set `default_train` (80%) and a validation set `default_valid` (20%) using the `createDataPartition()` function of the `caret` package.**
+
+If you haven't used the function `ifelse()` before, please feel free to review it in [Chapter 5 Control Flow](https://adv-r.hadley.nz/control-flow.html) (*particular section 5.2.2*) in Hadley Wickham's Book [Advanced R](https://adv-r.hadley.nz/), this provides a concise overview of choice functions (`if()`) and vectorised if (`ifelse()`).
+
+```{r split}
+# dummy variable
+levels(Default$student)
+Default$student <- ifelse(Default$student == "Yes", 1,0)
+
+
+# define the training partition  ~ 80 percent
+train_index <- createDataPartition(Default$default, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+
+# split the data using the training partition to obtain training data   ~ 80 percent
+default_train <- Default[train_index,]
+
+# define the valid set   ~ 20 percent
+default_valid <- Default[-train_index,]
+```
+
+#### K-Nearest Neighbours
+
+Now that we have explored the dataset, we can start on the task of classification. We can imagine a credit card company wanting to predict whether a customer will default on the loan so they can take steps to prevent this from happening.
+
+The first method we will be using is k-nearest neighbours (KNN). It classifies datapoints based on a majority vote of the k points closest to it. In `R`, the `class` package contains a `knn()` function to perform knn.
+
+4.  **Create class predictions for the test set using the `knn()` function. Use `student`, `balance`, and `income` (but no basis functions of those variables) in the `default_train` dataset. Set k to 5. Store the predictions in a variable called `knn_5_pred`.**
+
+*Remember*: make sure to review the `knn()` function through the *help* panel on the GUI or through typing "?knn" into the console. For further guidance on the `knn()` function, please see *Section 4.6.5* in [An introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/)
+
+```{r knn5}
+?knn
+
+#Select training set except the predicted
+xtrain <- default_train [, -1 ]
+
+#Select valid set except the predicted variables
+yvalid <- default_valid[, -1]
+
+# vector containing the class labels for the training observations
+Ytrain <- default_train$default
+
+# predict with knn
+knn_5_pred <- class::knn(train =xtrain, test = yvalid, cl = Ytrain, k= 5)
+table(knn_5_pred)
+```
+
+5.  **Create two scatter plots with income and balance as in the first plot you made. One with the true class (`default`) mapped to the colour aesthetic, and one with the predicted class (`knn_5_pred`) mapped to the colour aesthetic. Hint: Add the predicted class `knn_5_pred` to the `default_valid` dataset before starting your `ggplot()` call of the second plot. What do you see?**
+
+```{r plotknn}
+# Plot 1:
+Plot1
+```
+
+Why use I the default valid data set in the second plot? I do not understand, why I must plot with the validation set now. Should I use the validation set as data in the former graph, too?+
+
+→ default plot, because then we have the true class of default!
+
+So here the former graph with only the validation data:
+
+```{r}
+Plot1v <-ggplot(default_valid, aes(x= balance, y= income, color= default))+
+  geom_point()+
+  labs( x= "Balance",
+        y= "Income",
+        color = "predicted Default",
+        title= "Balance and Income of customers grouped by default")+
+  scale_color_viridis(discrete= TRUE)+
+  theme_minimal()
+Plot1v
+```
+
+```{r}
+# combine data
+default_valid2 <- cbind(default_valid, knn_5_pred)
+
+# plot predicted values
+Plot2<-ggplot(default_valid2, aes(x= balance, y= income, color= knn_5_pred))+
+  geom_point()+
+  labs( x= "Balance",
+        y= "Income",
+        color = "predicted Default",
+        title= "Balance and Income of customers grouped by predicted default")+
+  scale_color_viridis(discrete= TRUE)+
+  theme_minimal()
+Plot2
+```
+
+If we compare the two distributions of the default groups in the validation data set, we see in the predicted default plot a more narrow distribution. In the second one, for the predicted subjects the balance is higher than as we observed. So with this method we have less variance, but much more bias. I would conclude, with this knn we could underfit the data.
+
+-   there are quite some misclassifications: many "No" predictions
+-   with "Yes" true class and vice versa.
+
+6.  **Repeat the same steps, but now with a `knn_2_pred` vector generated from a 2-nearest neighbours algorithm. Are there any differences?**
+
+```{r knn2}
+knn_2_pred <- class::knn(train =xtrain, test = yvalid, cl = Ytrain, k= 2)
+table(knn_2_pred)
+```
+
+During this we have manually tested two different values for K, this although useful in exploring your data. To know the optimal value for K, you should use cross validation.
+
+```{r}
+# combine data
+default_valid2 <- cbind(default_valid2, knn_2_pred)
+
+# plot predicted values
+Plot3<-ggplot(default_valid2, aes(x= balance, y= income, color= knn_2_pred))+
+  geom_point()+
+  labs( x= "Balance",
+        y= "Income",
+        color = "predicted Default",
+        title= "Balance and Income of customers grouped by predicted default")+
+  scale_color_viridis(discrete= TRUE)+
+  theme_minimal()
+Plot3
+```
+
+In this case, we overfit the data, we have a lot more variance, but less bias. Neither 2 or 5 seems to be the best knn.
+
+-   compared to the 5-nn model, more people get classified as "Yes"
+-   Still, the method is not perfect
+
+#### Assessing classification
+
+The confusion matrix is an insightful summary of the plots we have made and the correct and incorrect classifications therein. A confusion matrix can be made in `R` with the `table()` function by entering two `factor`s:
+
+```{r confmat1}
+
+conf_2NN <- table(predicted = knn_2_pred, true = default_valid$default)
+view(conf_2NN)
+
+```
+
+To learn more these, please see *Section 4.4.3* in An Introduction to Statistical Learning, where it discusses Confusion Matrices in the context of another classification method Linear Discriminant Analysis (LDA).
+
+7.  **What would this confusion matrix look like if the classification were perfect?**
+
+If the confusion matrix would be perfect, we have no false positives and no false negatives. Why we are using again only the validation set? In the ISLR book the true default status of the training data set is used.
+
+```{r confmatb}
+conf_true <- table(true_valid = default_valid$default, true_valid = default_valid$default)
+conf_true 
+```
+
+8.  **Make a confusion matrix for the 5-nn model and compare it to that of the 2-nn model. What do you conclude?**
+
+```{r confmat3}
+conf_5NN <- table(predicted = knn_5_pred, true = default_valid$default)
+view(conf_5NN)
+```
+
+In the confusion matrix for the 2 KNN model there is a prediction for 49 customers to default, but they actually not did (false positives) and for 49 customers is the case the other way around (false negative). In the 5 Knn model the false positive is by far less, only 14 customers are predicted to would default but actually did not. The false negative rate is in the second model slightly higher.
+
+Now the bank manager has to asked the following question: Is a slightly more negative rate more important for credit card loans or is a much higher false positive rate much more higher? I do not know, how much it costs a bank, giving credit cards to people, that default.
+
+9.  **Comparing performance becomes easier when obtaining more specific measures. Calculate the specificity, sensitivity, accuracy and the precision.**
+
+Assuming that model 5 is better, we test:
+
+```{r}
+#specifity of both, true negative / all negative
+spec2 <- 1884 / (1884 + 49) 
+spec5 <- 1919 / (1919 + 14)
+spec5 > spec2
+
+```
+
+```{r}
+# sensivity of both, true positve / all positive
+sn2 <- 17 / (17+ 49)
+sn5 <- 14 / (14 +52)
+sn5 > sn2
+```
+
+```{r}
+# accuracy TP + TN / P + N
+acc2 <- (1884 + 17) / (1884 + 49 + 49 +17)
+acc5 <- (1919 + 14) / (1919 + 14+ 52+14)
+acc5 > acc2
+```
+
+```{r}
+# Precision TP / TP + FP
+prec2 <- 17 / (17 + 49)
+prec5 <- 14/ (14 + 14)
+prec5 > prec2
+```
+
+-   The 5NN model has better specificity, but worse sensitivity. However, the overall accuracy of the 5NN model is (slightly) better. When we look at the precision, the 5NN model performs a lot better compared to the 2NN model.
+
+### Logistic regression
+
+KNN directly predicts the class of a new observation using a majority vote of the existing observations closest to it. In contrast to this, logistic regression predicts the `log-odds` of belonging to category 1. These log-odds can then be transformed to probabilities by performing an inverse logit transform:
+
+$p = \frac{1}{1 + e^{-\alpha}}$
+
+where $\alpha$; indicates log-odds for being in class 1 and $p$ is the probability.
+
+Therefore, logistic regression is a `probabilistic` classifier as opposed to a `direct` classifier such as KNN: indirectly, it outputs a probability which can then be used in conjunction with a cutoff (usually 0.5) to classify new observations.
+
+Logistic regression in `R` happens with the `glm()` function, which stands for generalized linear model. Here we have to indicate that the residuals are modeled not as a Gaussian (normal distribution), but as a `binomial` distribution.
+
+10. **Use `glm()` with argument `family = binomial` to fit a logistic regression model `lr_mod` to the `default_train` data.**
+
+```{r lrmod}
+lr_mod <- glm(default ~ student + balance + income, data= default_train, family= binomial)
+pred_log <- predict.glm(lr_mod, newdata = default_train, type= "response")
+```
+
+Now we have generated a model, we can use the `predict()` method to output the estimated probabilities for each point in the training dataset. By default `predict` outputs the log-odds, but we can transform it back using the inverse logit function of before or setting the argument `type = "response"` within the predict function.
+
+Is it right, that I used the default_train data as \`new data' argument ?
+
+11. **Visualise the predicted probabilities versus observed class for the training dataset in `lr_mod`. You can choose for yourself which type of visualisation you would like to make. Write down your interpretations along with your plot.**
+
+```{r visdif}
+logdata <- cbind(default_train, pred_log)
+```
+
+```{r}
+ggplot(logdata, aes(x=income, y= balance, color= default))+
+   geom_point()+
+  labs(title = "observed and predicted default by balance",
+       x= "income",
+       y="balance")+
+    scale_color_viridis(discrete = TRUE)+
+  theme_minimal()
+```
+
+```{r}
+ggplot(logdata, aes(x=income, y= balance, color= pred_log))+
+   geom_point()+
+  labs(title = "observed and predicted default by balance",
+       x= "income",
+       y="balance")+
+    scale_color_viridis()+
+  theme_minimal()
+```
+
+The balance for the predicted default is way more higher than in the observations. In the predicted distribution no one with a default has a probable balance under 1500 \$. While in the observed data in the validation set we can see a lot of observations that are lower than a 1500\$. This is a sign for underfitting the data and for a too linear model.
+
+Another advantage of logistic regression is that we get coefficients we can interpret.
+
+12. **Look at the coefficients of the `lr_mod` model and interpret the coefficient for `balance`. What would the probability of default be for a person who is not a student, has an income of 40000, and a balance of 3000 dollars at the end of each month? Is this what you expect based on the plots we've made before?**
+
+```{r coefs}
+options(scipen=999, digits=7)
+summary(lr_mod)
+```
+
+What would the probability of default be for a person who is not a student, has an income of 40000, and a balance of 3000 dollars at the end of each month? Is this what you expect based on the plots we've made before?\_\_
+
+```{r}
+(exp(-10.63 - (0.000001*40000) + (0.00573*3000))) /
+(1 + exp(-10.63 - (0.000001*40000) + (0.00573*3000)))
+```
+
+Yes, I would expect this I look to the graphs before.
+
+Let's visualise the effect `balance` has on the predicted default probability.
+
+-   probability of .998 of defaulting. This is in line with the plots of before
+-   because this new data point would be all the way on the right.
+
+13. **Create a data frame called `balance_df` with 3 columns and 500 rows: `student` always 0, `balance` ranging from 0 to 3000, and `income` always the mean income in the `default_train` dataset.**
+
+```{r marbal}
+student <- rep.int(0, 500)
+balance <- seq(0, 3000, length.out = 500)
+mean_income <-mean(default_train$income)
+income <- rep(mean_income, 500)
+
+balance_df <- data.frame(student, balance, income)
+view(balance_df)
+```
+
+14. **Use this dataset as the `newdata` in a `predict()` call using `lr_mod` to output the predicted probabilities for different values of `balance`. Then create a plot with the `balance_df$balance` variable mapped to x and the predicted probabilities mapped to y. Is this in line with what you expect?**
+
+```{r marplot}
+# predict 
+pred_balance <- predict.glm(lr_mod, newdata = balance_df, type= "response")
+
+balance_df <- cbind(balance_df, pred_balance)
+
+
+#plot
+plot_balance <- ggplot(balance_df, aes(x=balance, y= pred_balance))+
+   geom_point()+
+  labs(title = "predicition with balance data set",
+       x= "balance",
+       y="predicition")+
+    scale_color_viridis(discrete = TRUE)+
+  theme_minimal()
+
+plot_balance 
+```
+
+It is what would be expected. If all the other predictors hold constant and we have only one equally distributed predictor, we have an S-shaped curve. That is because we have a categorical outcome variable. At one threshold, the probability of default changes.
+
+15. **Create a confusion matrix just as the one for the KNN models by using a cutoff predicted probability of 0.5. Does logistic regression perform better?**
+
+```{r confmatlogreg}
+ pred_prob <- predict(lr_mod, newdata = default_valid, type = "response")
+pred_lr   <- factor(pred_prob > .5, labels = c("No", "Yes"))
+
+conf_logreg <- table(predicted = pred_lr, true = default_valid$default)
+conf_logreg
+
+```
+
+-   logistic regression performs better in every way than knn. This depends on
+-   your random split so your mileage may vary
+
+16. **Calculate the specificity, sensitivity, accuracy and the precision for the logistic regression using the above confusion matrix. Again, compare the logistic regression to KNN.**
+
+```{r logreg_sens}
+spec_logreg <- conf_logreg[1,1] / (conf_logreg[1,1] + conf_logreg[2,1])
+spec_logreg
+```
+
+```{r}
+sens_logreg <- conf_logreg[2,2] / (conf_logreg[2,2] + conf_logreg[1,2])
+sens_logreg
+```
+
+```{r}
+acc_logreg <- (conf_logreg[1,1] + conf_logreg[2,2]) / sum(conf_logreg)
+acc_logreg
+```
+
+```{r}
+prec_logreg <- conf_logreg[2,2] / (conf_logreg[2,2] + conf_logreg[2,1])
+prec_logreg
+```
+
+Now we can very clearly see that logisitc regression performs a lot better compared to KNN, especially the increase in precision is impressive!
+
+#### Final exercise
+
+Now let's do another - slightly less guided - round of KNN and/or logistic regression on a new dataset in order to predict the outcome for a specific case. We will use the Titanic dataset also discussed in the lecture. The data can be found in the `/data` folder of your project. Before creating a model, explore the data, for example by using `summary()`.
+
+```{r}
+library(readr)
+titanic <- read.csv("data/Titanic.csv")
+titanic <- as_tibble(titanic)
+str(titanic)
+```
+
+17. **Create a model (using knn or logistic regression) to predict whether a 14 year old boy from the 3rd class would have survived the Titanic disaster.**
+
+```{r}
+# define the training partition  ~ 80 percent
+train_index <- createDataPartition(titanic$Survived, p = .8, 
+                                  list = FALSE, 
+                                  times = 1)
+
+# split the data using the training partition to obtain training data   ~ 80 percent
+survived_train <- titanic[train_index,]
+
+# define the valid set   ~ 20 percent
+survived_valid <- titanic[-train_index,]
+```
+
+```{r}
+lr_tit <- glm(Survived ~ PClass + Age + Sex, data= survived_train, family= binomial)
+summary(lr_tit)
+```
+
+```{r}
+predict(lr_tit, 
+        newdata = tibble(
+          PClass = c( "3rd",    "2nd"),
+          Age    = c(    14,       14), 
+          Sex    = c("male", "female")
+        ), 
+        type = "response"
+)
+```
+
+18. **Would the passenger have survived if they were a 14 year old girl in 2nd class?**
+
+-   So our hypothetical passenger does not have a large survival probability:
+-   our model would classify the boy as not surviving. The girl would likely survive however. This is due to the women and children getting preferred access to the lifeboats. Also 3rd class was way below deck.

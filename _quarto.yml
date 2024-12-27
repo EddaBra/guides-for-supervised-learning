@@ -11,6 +11,11 @@ book:
     - intro.qmd
     - visualization.qmd
     - model-accuracy.qmd
+    - linear-regression.qmd
+    - classification.qmd
+    - beyond-linearity.qmd
+    - tree-based.qmd
+    - text-mining.qmd
 format:
   html:
     theme: cosmo
