@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Edda Brandes">
-<meta name="dcterms.date" content="2022-01-01">
 
-<title>Guides for Supervised Learning</title>
+<title>2&nbsp; Visualization – Guides for Supervised Learning</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -32,7 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./intro.html" rel="next">
+<link href="./model-accuracy.html" rel="next">
+<link href="./intro.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -83,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Preface</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./visualization.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Visualization</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -110,7 +109,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preface</span></a>
   </div>
 </li>
@@ -122,7 +121,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./visualization.html" class="sidebar-item-text sidebar-link">
+  <a href="./visualization.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Visualization</span></span></a>
   </div>
 </li>
@@ -142,7 +141,15 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#preface" id="toc-preface" class="nav-link active" data-scroll-target="#preface">Preface</a></li>
+  <li><a href="#why-data-visualisations" id="toc-why-data-visualisations" class="nav-link active" data-scroll-target="#why-data-visualisations"><span class="header-section-number">3</span> Why data visualisations</a>
+  <ul class="collapse">
+  <li><a href="#how-to-communicate-via-visualization" id="toc-how-to-communicate-via-visualization" class="nav-link" data-scroll-target="#how-to-communicate-via-visualization"><span class="header-section-number">3.1</span> How to communicate via visualization?</a></li>
+  <li><a href="#criteria-for-good-graphs-and-visualization" id="toc-criteria-for-good-graphs-and-visualization" class="nav-link" data-scroll-target="#criteria-for-good-graphs-and-visualization"><span class="header-section-number">3.2</span> Criteria for good graphs and visualization</a></li>
+  <li><a href="#channels-and-type-of-graph-in-overwiew" id="toc-channels-and-type-of-graph-in-overwiew" class="nav-link" data-scroll-target="#channels-and-type-of-graph-in-overwiew"><span class="header-section-number">3.3</span> Channels and type of graph in overwiew</a></li>
+  <li><a href="#principles-of-design" id="toc-principles-of-design" class="nav-link" data-scroll-target="#principles-of-design"><span class="header-section-number">3.4</span> Principles of Design</a></li>
+  <li><a href="#guide-the-reader" id="toc-guide-the-reader" class="nav-link" data-scroll-target="#guide-the-reader"><span class="header-section-number">3.5</span> Guide the reader</a></li>
+  <li><a href="#how-ggplot-function-works" id="toc-how-ggplot-function-works" class="nav-link" data-scroll-target="#how-ggplot-function-works"><span class="header-section-number">3.6</span> how ggplot function works</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -151,26 +158,14 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Guides for Supervised Learning</h1>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Visualization</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Edda Brandes </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">January 1, 2022</p>
-    </div>
-  </div>
   
     
   </div>
@@ -180,12 +175,157 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p><a href="https://socviz.co/lookatdata.html">DatVis</a></p>
+<ul>
+<li>Chapter 1: Look at data</li>
+<li>Chapter 3: Make a plot</li>
+<li>Chapter 4: Show the right numbers</li>
+<li>Chapter 5, section 5.3 &amp; 5.4 Plot text directly and label outliers</li>
+</ul>
+<section id="why-data-visualisations" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Why data visualisations</h1>
+<ul>
+<li>communicate results</li>
+<li>explore data</li>
+<li>if done correctly: efficient way of processing &amp; remembering data, becaue reduce the cognitive load and take it easy into long-term memory → because we have a limited working memory and keep in mind ~ 7 variables</li>
+<li>Reducing cognitive load makes the audience:</li>
+<li>More willing to read your analysis</li>
+<li>More likely to understand the data/results</li>
+<li>More prone to accept the results</li>
+<li>More likely to remember them</li>
+<li>Often the only part of the analysis that the audience ever sees.</li>
+</ul>
+<section id="how-to-communicate-via-visualization" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="how-to-communicate-via-visualization"><span class="header-section-number">3.1</span> How to communicate via visualization?</h2>
+<ul>
+<li>How do we make sure that the graphs we make transfer:</li>
+<li>The right part of the data, and; with the less effort possible? ( minimizes cognitive load)</li>
+<li>First step in a data visualization task: Write down the main message you want to convey</li>
+</ul>
+<p><strong>Central questions:</strong></p>
+<ol type="1">
+<li>What are the main elements of a graph? (labels, dots, bars, facets …)</li>
+</ol>
+<p><img src="figures/2. elements.png" class="img-fluid" width="200"></p>
+<ol start="2" type="1">
+<li>What type of plot should you use?</li>
+</ol>
+<ul>
+<li>Barplots for a categorical and a numerical variable, compare the frequency</li>
+<li>Scatterplots for 2 numerical variables, shows covariances and relations of the two variables</li>
+</ul>
+<p><img src="figures/2. types.png" class="img-fluid" width="200"></p>
+<p>3.How can we make a plot look more professional? - take it as minimal as possible, no “junk”, no Color, if no color is needed, scale comprehensible</p>
+<p><img src="figures/2. professional.png" class="img-fluid" width="500"></p>
+<ol start="4" type="1">
+<li>How to guide the reader?</li>
+</ol>
+<ul>
+<li>highlight the central aspect</li>
+</ul>
+<p><img src="figures/2. guide.png" class="img-fluid" width="400"></p>
+</section>
+<section id="criteria-for-good-graphs-and-visualization" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="criteria-for-good-graphs-and-visualization"><span class="header-section-number">3.2</span> Criteria for good graphs and visualization</h2>
+<p>Guidelines for routine plotting:</p>
+<ul>
+<li>properly chosen format and design</li>
+<li>use words, numbers and drawing together</li>
+<li>display an accessible complexity of detail</li>
+<li>avoid content-free decoration</li>
+<li>maximize the “data-to-ink” ratio</li>
+<li>simplify, remove everything that is not necessary</li>
+<li>no cherry picking in data, visuals must be chosen in relation to data, example: Age cohorts in Barcharts, longtidual changes in point charts</li>
+<li>reduce aesthetics to a minimal and use colour and so on only if it has a meaning.</li>
+<li>humans ability to see contrast is stronger for monochrome images than for color</li>
+<li>using color in data visualization introduces a number of other complications, because color contains the hue (Farbton) and a chrominance ot chroma (intesity or vividness of the color):
+<ul>
+<li>how bright an object looks depends partly on the brightness of objects near it.</li>
+<li>distance of variables should be found also in a perceptually sense in the choice of colors, not only in a numerical one</li>
+</ul></li>
+<li>“preattentive pop-out”: Some objects in our visual field are easier to see than others → indicate with shapes, color &amp; position.</li>
+<li>Most people see the Poisson-generated pattern (a random generated pattern) as having more structure, or less ‘randomness’, than the Matérn (an equally distributed), whereas the reverse is true.</li>
+<li>humans are always looking for structure, the tendency of infer relationships, “gestalt rules”:
+<ul>
+<li>Similarity: Things that look alike seem to be related.</li>
+<li>Connection: Things that are visually tied to one another seem to be related.</li>
+<li>Continuity: Partially hidden objects are completed into familiar shapes.</li>
+<li>Closure: Incomplete shapes are perceived as complete.</li>
+<li>Figure and Ground: Visual elements are taken to be either in the foreground or the background.</li>
+<li>Common Fate: Elements sharing a direction of movement are perceived as a unit.</li>
+</ul></li>
+<li>humans can identify and estimate percentages of differences of two sizes for graphs on a different level, here the results of testing:</li>
+</ul>
+<p><img src="figures/2.decoding.png" class="img-fluid" width="400"></p>
+</section>
+<section id="channels-and-type-of-graph-in-overwiew" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="channels-and-type-of-graph-in-overwiew"><span class="header-section-number">3.3</span> Channels and type of graph in overwiew</h2>
+<p><img src="figures/2. channels overview.png" class="img-fluid" width="400"></p>
+<p><img src="figures/2. amounts.png" class="img-fluid" width="400"></p>
+<p><img src="figures/2. distributions.png" class="img-fluid" width="400"></p>
+<p><img src="figures/2. relationsships.png" class="img-fluid" width="400"></p>
+<p><img src="figures/2. geo.png" class="img-fluid" width="400"></p>
+</section>
+<section id="principles-of-design" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="principles-of-design"><span class="header-section-number">3.4</span> Principles of Design</h2>
+<p><img src="figures/2. principles.png" class="img-fluid" width="400"></p>
+<p><strong>Pracitcal advice</strong></p>
+<p>Reduce cognitive load: - Removing unnecessary clutter - More professional/aesthetically pleasant Contrast: - Eliminate unnecessary lines (all frames, use gray grid lines, etc) - ’t use a gray background - White space is your friend (allows for “breathing”) - Enlarge the labels - Use vector graphics (svg/pdf/eps) to avoid blurry figures –&gt; Edit them in AI or Inkscape Repetition: Be consistent in different figures Alignment: Make sure you align subplots/labels Proximity: When possible, label data directly (instead of using legends)</p>
+</section>
+<section id="guide-the-reader" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="guide-the-reader"><span class="header-section-number">3.5</span> Guide the reader</h2>
+<ul>
+<li>We read plots in a Z-shaped flow: top-left to top-right to bottom-left to bottom-right</li>
+</ul>
+<p><img src="figures/2. reading.png" class="img-fluid" width="200"></p>
+<p>With this elements:</p>
+<p><img src="figures/2. guidesee.png" class="img-fluid" width="400"></p>
+<p>The most useful pre-attentive attribute: - Increases contrast - Allows for consistency (same country with the same color)</p>
+<p>Color affect emotion and this is culture-dependent. Some responses are nearly universal - Warm colors –&gt; alive/alert - Blue colors –&gt; calming/focus</p>
+<p>Color for the colorblinding: https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40</p>
+<p>In addition of highlighting, colours can be used to: - Represent categories (not more than 4 colors) - Represent values: - Only if necessary (i.e.&nbsp;you are using the x and y axis for more important variables) - Not accurate (show trends)</p>
+<p><img src="figures/2. guidecolor.png" class="img-fluid" width="400"></p>
+<ul>
+<li>left, too much: you are lost</li>
+<li>right, your attention is guided to the important aspects</li>
+</ul>
+<p><img src="figures/2. colorrelative.png" class="img-fluid" width="400"></p>
+<p><img src="figures/2. colorpalette.png" class="img-fluid" width="400"></p>
+<ul>
+<li>Qualitative: categorial data</li>
+<li>Sequential: The minimum or maximum is important</li>
+<li>Diverging: The middle value is the important one, which comparison is drawn on</li>
+</ul>
+</section>
+<section id="how-ggplot-function-works" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="how-ggplot-function-works"><span class="header-section-number">3.6</span> how ggplot function works</h2>
+<p><img src="figures/2. ggplot function.png" class="img-fluid" width="200"></p>
+<p>required library: <code>library(tidyverse)</code></p>
+<p>In R, grammar of graphics is implemented in <code>ggplot()</code>, a function in the <code>ggplot2</code> package.</p>
+<p>Elements of a graph:</p>
+<ul>
+<li>The data: ggplot(data = gapminder)</li>
+<li>Aesthetic mappings (position, shape, color, …) – map variables to influence visual channels: mapping = aes(x = gdp, y = pop)</li>
+<li>Geometric objects (points, lines, bars, …) – use those mappings: + geom_point()</li>
+<li>Labels (titles, caption, axes labels): + labs(x = “GDP”, y=“Population”)</li>
+</ul>
+<p><code>ggplot()</code> is the <em>function</em> to plot <code>aes</code> or <em>astehtic mappings</em> is the logical connection bewtween your data and the plot element <code>geom</code> defines the type of plot like</p>
+<ul>
+<li><code>geom_point</code></li>
+<li><code>geom_bar</code></li>
+<li><code>geom_boxplot</code></li>
+<li>in this function additional elements could be added like scales, labels and so on</li>
+</ul>
+<p>ggplot function is additive, you add layer by layer, e. g.:</p>
+<pre><code>p &lt;- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y=lifeExp))
+p + geom_point() +
+    geom_smooth(method = "gam") +
+    scale_x_log10(labels = scales::dollar)</code></pre>
+<p>Overview ggplot aesthetics: <a href="https://ggplot2.tidyverse.org/reference/index.html#section-aesthetics" class="uri">https://ggplot2.tidyverse.org/reference/index.html#section-aesthetics</a></p>
+<p>Overview ggplot geometrics: <a href="https://ggplot2.tidyverse.org/reference/index.html#section-geoms" class="uri">https://ggplot2.tidyverse.org/reference/index.html#section-geoms</a></p>
 
-<section id="preface" class="level1 unnumbered">
-<h1 class="unnumbered">Preface</h1><p><img src="cover.png" title="Guides for Supervised Learning" class="quarto-cover-image img-fluid"></p>
-<p>This is a Quarto Book provides guidance for machine learning methods and advanced data visualiziation in R. The book is based on the course “Applied Data Analysis &amp; Visualisation” from the Department of Methodology and Statistics (University Utrecht).</p>
 
-
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -608,10 +748,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./intro.html" class="pagination-link" aria-label="Introduction">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./intro.html" class="pagination-link" aria-label="Introduction">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./model-accuracy.html" class="pagination-link" aria-label="Model accuracy and fit">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Model accuracy and fit</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
