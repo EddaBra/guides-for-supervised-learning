@@ -1,3 +1,0 @@
-# Preface {.unnumbered}
-
-This is a Quarto Book provides guidance for machine learning methods and advanced data visualiziation in R. The book is based on the course "Applied Data Analysis & Visualisation" from the Department of Methodology and Statistics (University Utrecht).

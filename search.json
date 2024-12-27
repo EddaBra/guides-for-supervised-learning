@@ -1,0 +1,62 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Guides for Supervised Learning",
+    "section": "",
+    "text": "Preface\nThis is a Quarto Book provides guidance for machine learning methods and advanced data visualiziation in R. The book is based on the course “Applied Data Analysis & Visualisation” from the Department of Methodology and Statistics (University Utrecht).",
+    "crumbs": [
+      "Preface"
+    ]
+  },
+  {
+    "objectID": "intro.html",
+    "href": "intro.html",
+    "title": "1  Introduction",
+    "section": "",
+    "text": "1.1 Parametric Methods\nThis chapter gives an introduction to machine learning.\nReadings: ISLR\nData Set Website Kaggle: https://www.kaggle.com/datasets\nWhat is Statical Learning?\nData analysis goals:\nModes & Examples:\nDifferent objections in Data Science and Economics for estimating the function of Y\nData analysis: estimating a model f to summarize our data, composed of an outcome Y and a set of predictors \\(X:\\hat{Y} =f(\\hat{Y})\\). Two main reasons to estimate f.\n\\[\n    \\hat{Y} =\\hat{f}(X)\n\\]\nThe accuracy of \\(\\hat{Y}\\) for Y depends on reducible and irreducible error. First can be reduced using the most appropriate statistical learning technique. irreducible because of the error term, that has variability \\(0\\), because this one include unmeasured variables that are useful in predicting Y with not measurable variation.\nonly the reducible error can be minimized by the right techniques, keep in mind, always irreducible error, which is unknown!\nData science: mostly interested in prediciton, so in \\(\\hat{Y}\\).\nEmpirical research /economics: mostly interested in inference (i.e., explanation): understanding the relationship beween X and Y → linear regression.\nReduces the problem of estimating f down to an estimating set of parameters. Two steps:\n\\[\nf(X)= \\beta_0 +\\beta_1 X_1 + \\beta_2X_2 + \\dots, \\beta_pX_p\n\\]\n\\[\nY \\sim \\beta_0 +\\beta_1 X_1 + \\beta_2X_2 + \\dots, \\beta_pX_p\n\\]\nMost used method: ordninary least squares. Mostly a linear model. Has the problem, that often linear models can´t grasp the entirely abitrary funktion f\n→ address this problem with more flexible models, but requires a greater number of parameters → problem of overfitting data, which means the model follow the errors / noise too closely.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#parametric-methods",
+    "href": "intro.html#parametric-methods",
+    "title": "1  Introduction",
+    "section": "",
+    "text": "f is a linear of x (choose a parametric form)\n\n\n\nnow, you have to estimate the parameters, the \\(\\beta\\) with the train data, that fits a model.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#non-parametric-methods",
+    "href": "intro.html#non-parametric-methods",
+    "title": "1  Introduction",
+    "section": "1.2 Non-parametric Methods",
+    "text": "1.2 Non-parametric Methods\nNo explicit assumptions are made for the f. No predictors are collected beforehand. They have the freedom to choose any functional form from the training data. As a result, for parametric models to estimate the mapping function they require much more data than parametric ones. Instead seek an estimate of f that gets as close to the data points as possible without being too rough or wiggly. → advantage is a more accurate fit for a wider range of possible shapes for f. → disadvantage is, that far more observations are necessary to estimate an accurate f. Most used method: thin-plate spline with a selected level of smoothness, that defines the level of roughness to the fit.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#model-accuracy-vs-interpretability",
+    "href": "intro.html#model-accuracy-vs-interpretability",
+    "title": "1  Introduction",
+    "section": "1.3 Model accuracy vs interpretability",
+    "text": "1.3 Model accuracy vs interpretability\nDeep Learning is 90 % Blackbox, 10 % is not. It is not obvious, what happen, because there are multiple, thousands of coefficients. We see the input and the outcome, but we can not figure out the certain coefficients and parameter. Many methods have different levels of flexibility, means how many parameters are estimated. Linear regression for example really inflexible, the thin plate splines are much more flexible. High model complexity in it means high flexibility! Area of conflict between Interpretability and flexibility and methods in this area:\n\nWhich model is adequate depends on the research subject. Not always is a very flexible approach the preffered one. A linear model, which is more restrictive,is very adequate for inference, because it is more interpretable. → with a restrictive model it is easier to understand the relationship between \\(Y\\) and \\(X_1, X_2, \\dots, X_p\\). With a flexible model it is really difficult to understand how any individual predictor is associated with the response.\n\nlasso relies on a linear model, but uses an alternative fitting procedure for estimating the coefficients, less flexible approach than linear regression, because a number of parameters set to zero.\nGAM or generalized additive models allow for certain non-linear relationships\nbagging, boosting, support vector machines and neural networks (deep learning) are fully non-linear methods.\n\nHow can we measure the accuracy of a model?\n\n\nWe should stay by 5 to 7 predictors in the flexibility/ complexity, because otherwise the model is overfed.\nBias trad off variance:",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  },
+  {
+    "objectID": "intro.html#methods-to-find-patterns-and-relationsships",
+    "href": "intro.html#methods-to-find-patterns-and-relationsships",
+    "title": "1  Introduction",
+    "section": "1.4 Methods to find patterns and relationsships",
+    "text": "1.4 Methods to find patterns and relationsships\nExplorative data analysis\nDescribing interesting patterns: use graphs, summaries, to understand subgroups, detect anomalies (“outliers”), understand the data\nExamples: boxplot, five-number summary, histograms, scatterplots…\n\n\n1.4.1 Unsupervised learning\nInputs, but no outputs. Try to learn structure and relationships from these data, like detecting unobserved groups (clusters) from the data. For every observation there is a measurement in x, but there is no associated response y_i, there is no response variable to predict → we are working blind, no response variable to supervise the analysis.\n\nFor detecting relationships between variables and observations → finding clusters in data\n\non the basis of \\(x_1, \\dots, x_n\\) in which relatively distinct groups fall the observations.\n\nDimension reduction methods:\n\nPrincipal components analysis\nFactor analysis\nRandom projections\n\nClustering:\n\nK-means clustering\nHierarchical clustering\n\n\n\n\n1.4.2 Supervised learning\nBuilding a statistical for predicting/ estimating an output based on one or more inputs. The output is predefined: Is it this or that? What outcome should be generated?\nFor each observation of the predictor measurement is an associated response measurement \\(y_i\\). On this basis a model is searched to accurately predicting the respones for future observations (prediction) or better understanding the relationsship between the response and the predictors (inference).\nExamples:\n\nSpam Classification of e-mail\nface recognition over images\nmedical diagnosis systems for patients\n\nMethods include:\n\n(logistic) Regression\ndecision trees/ random forests\nsupport vector machines\nneural networks\n\n\nsupervised learning: classification vs. regression:\nClassification:\npredict to which category an observation belongs (qualitative, categorical outcomes) -&gt; cancer: yes or no?, a boy or a girl?\nRegression:\npredict a quantitative (continuous outcome) -&gt; money, weight, amount of rain\nsemi-supervised learning problem:\nSometimes not that clear, if supervised or unsupervised learning is the better solution. This is the case, if we have more observations with predictor measurements and a response measurement than observations with measurements only.\nHere statistical learning is used to incorporate both kind of observations.",
+    "crumbs": [
+      "<span class='chapter-number'>1</span>  <span class='chapter-title'>Introduction</span>"
+    ]
+  }
+]
